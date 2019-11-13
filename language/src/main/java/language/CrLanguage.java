@@ -4,14 +4,16 @@ import com.oracle.truffle.api.CallTarget;
 import com.oracle.truffle.api.Truffle;
 import com.oracle.truffle.api.TruffleLanguage;
 import com.oracle.truffle.api.frame.FrameDescriptor;
-import com.oracle.truffle.api.frame.VirtualFrame;
 import com.oracle.truffle.api.interop.InteropLibrary;
-import com.oracle.truffle.api.nodes.RootNode;
-import language.nodes.AddNodeGen;
+import com.oracle.truffle.api.source.Source;
+import language.nodes.CrExprNode;
 import language.nodes.CrRootNode;
-import language.nodes.LongNode;
+import language.parser.Cr01Lexer;
+import language.parser.Cr01Parser;
 import language.runtime.CrContext;
-import org.graalvm.polyglot.Context;
+import org.antlr.v4.runtime.CharStreams;
+import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.tree.ParseTreeWalker;
 
 @TruffleLanguage.Registration(name = "cr01", id = "cr01",
         defaultMimeType = CrLanguage.MIME, characterMimeTypes = CrLanguage.MIME)
@@ -46,12 +48,22 @@ public class CrLanguage extends TruffleLanguage<CrContext>{
 
     @Override
     protected CallTarget parse(ParsingRequest request) throws Exception {
-        String text = request.getSource().getCharacters().toString();
-        long value = Long.parseLong(text);
-        var node = new CrRootNode(this, new FrameDescriptor(), AddNodeGen.create(new LongNode(value), new LongNode(value)));
-        return Truffle.getRuntime().createCallTarget(node);
+        CrExprNode ast = parseSource(request.getSource());
+        var root = new CrRootNode(this, new FrameDescriptor(), ast);
+        return Truffle.getRuntime().createCallTarget(root);
     }
-    
+
+    private CrExprNode parseSource(Source source) {
+        var charStream = CharStreams.fromString(source.getCharacters().toString());
+        var lexer = new Cr01Lexer(charStream);
+        var parser = new Cr01Parser(new CommonTokenStream(lexer));
+        var prog = parser.prog();
+        var treeWalker = new ParseTreeWalker();
+        var listener = new Cr01ParseTreeListener();
+        treeWalker.walk(listener, prog);
+        return listener.getExpr();
+    }
+
     @Override
     protected CrContext createContext(Env env) {
         return new CrContext();

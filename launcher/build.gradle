@@ -7,21 +7,15 @@
  */
 
 plugins {
-    // Apply the java plugin to add support for Java
-    id 'java'
-
     // Apply the application plugin to add support for building a CLI application.
     id 'application'
 }
 
 repositories {
-    // Use jcenter for resolving dependencies.
-    // You can declare any Maven/Ivy/file repository here.
     jcenter()
 }
 
 dependencies {
-    // This dependency is used by the application.
     implementation 'com.google.guava:guava:28.0-jre'
 
     // Use JUnit test framework
@@ -29,6 +23,15 @@ dependencies {
 
     implementation 'org.graalvm.sdk:graal-sdk:19.2.1'
     implementation 'org.graalvm.truffle:truffle-api:19.2.1'
+
+    // ANTLR
+    implementation 'org.antlr:antlr4-runtime:4.7.1'
+
+    // This dependency is used by the application.
+    implementation 'com.google.guava:guava:28.0-jre'
+
+    // Use JUnit test framework
+    testImplementation 'junit:junit:4.12'
 
     implementation files("../language/build/classes/java/main")
 }
