@@ -18,6 +18,18 @@ public interface Cr01Listener extends ParseTreeListener {
 	 */
 	void exitProg(Cr01Parser.ProgContext ctx);
 	/**
+	 * Enter a parse tree produced by the {@code varExpr}
+	 * labeled alternative in {@link Cr01Parser#expr}.
+	 * @param ctx the parse tree
+	 */
+	void enterVarExpr(Cr01Parser.VarExprContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code varExpr}
+	 * labeled alternative in {@link Cr01Parser#expr}.
+	 * @param ctx the parse tree
+	 */
+	void exitVarExpr(Cr01Parser.VarExprContext ctx);
+	/**
 	 * Enter a parse tree produced by the {@code infixExpr}
 	 * labeled alternative in {@link Cr01Parser#expr}.
 	 * @param ctx the parse tree
@@ -53,4 +65,16 @@ public interface Cr01Listener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitParensExpr(Cr01Parser.ParensExprContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code letExpr}
+	 * labeled alternative in {@link Cr01Parser#expr}.
+	 * @param ctx the parse tree
+	 */
+	void enterLetExpr(Cr01Parser.LetExprContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code letExpr}
+	 * labeled alternative in {@link Cr01Parser#expr}.
+	 * @param ctx the parse tree
+	 */
+	void exitLetExpr(Cr01Parser.LetExprContext ctx);
 }

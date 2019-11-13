@@ -28,6 +28,18 @@ public class Cr01BaseListener implements Cr01Listener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterVarExpr(Cr01Parser.VarExprContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitVarExpr(Cr01Parser.VarExprContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterInfixExpr(Cr01Parser.InfixExprContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -59,6 +71,18 @@ public class Cr01BaseListener implements Cr01Listener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitParensExpr(Cr01Parser.ParensExprContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterLetExpr(Cr01Parser.LetExprContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitLetExpr(Cr01Parser.LetExprContext ctx) { }
 
 	/**
 	 * {@inheritDoc}
