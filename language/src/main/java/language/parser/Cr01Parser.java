@@ -17,7 +17,7 @@ public class Cr01Parser extends Parser {
 	protected static final PredictionContextCache _sharedContextCache =
 		new PredictionContextCache();
 	public static final int
-		T__0=1, T__1=2, OP_ADD=3, OP_SUB=4, NUM=5, WS=6, NEWLINE=7;
+		T__0=1, T__1=2, OP_ADD=3, OP_SUB=4, OP_MUL=5, OP_DIV=6, NUM=7, WS=8, NEWLINE=9;
 	public static final int
 		RULE_prog = 0, RULE_expr = 1;
 	private static String[] makeRuleNames() {
@@ -29,13 +29,14 @@ public class Cr01Parser extends Parser {
 
 	private static String[] makeLiteralNames() {
 		return new String[] {
-			null, "'('", "')'", "'+'", "'-'"
+			null, "'('", "')'", "'+'", "'-'", "'*'", "'/'"
 		};
 	}
 	private static final String[] _LITERAL_NAMES = makeLiteralNames();
 	private static String[] makeSymbolicNames() {
 		return new String[] {
-			null, null, null, "OP_ADD", "OP_SUB", "NUM", "WS", "NEWLINE"
+			null, null, null, "OP_ADD", "OP_SUB", "OP_MUL", "OP_DIV", "NUM", "WS", 
+			"NEWLINE"
 		};
 	}
 	private static final String[] _SYMBOLIC_NAMES = makeSymbolicNames();
@@ -162,6 +163,8 @@ public class Cr01Parser extends Parser {
 		public ExprContext expr(int i) {
 			return getRuleContext(ExprContext.class,i);
 		}
+		public TerminalNode OP_MUL() { return getToken(Cr01Parser.OP_MUL, 0); }
+		public TerminalNode OP_DIV() { return getToken(Cr01Parser.OP_DIV, 0); }
 		public TerminalNode OP_ADD() { return getToken(Cr01Parser.OP_ADD, 0); }
 		public TerminalNode OP_SUB() { return getToken(Cr01Parser.OP_SUB, 0); }
 		public InfixExprContext(ExprContext ctx) { copyFrom(ctx); }
@@ -248,39 +251,67 @@ public class Cr01Parser extends Parser {
 				throw new NoViableAltException(this);
 			}
 			_ctx.stop = _input.LT(-1);
-			setState(20);
+			setState(23);
 			_errHandler.sync(this);
-			_alt = getInterpreter().adaptivePredict(_input,1,_ctx);
+			_alt = getInterpreter().adaptivePredict(_input,2,_ctx);
 			while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER ) {
 				if ( _alt==1 ) {
 					if ( _parseListeners!=null ) triggerExitRuleEvent();
 					_prevctx = _localctx;
 					{
-					{
-					_localctx = new InfixExprContext(new ExprContext(_parentctx, _parentState));
-					((InfixExprContext)_localctx).left = _prevctx;
-					pushNewRecursionContext(_localctx, _startState, RULE_expr);
-					setState(15);
-					if (!(precpred(_ctx, 2))) throw new FailedPredicateException(this, "precpred(_ctx, 2)");
-					setState(16);
-					((InfixExprContext)_localctx).op = _input.LT(1);
-					_la = _input.LA(1);
-					if ( !(_la==OP_ADD || _la==OP_SUB) ) {
-						((InfixExprContext)_localctx).op = (Token)_errHandler.recoverInline(this);
-					}
-					else {
-						if ( _input.LA(1)==Token.EOF ) matchedEOF = true;
-						_errHandler.reportMatch(this);
-						consume();
-					}
-					setState(17);
-					((InfixExprContext)_localctx).right = expr(3);
+					setState(21);
+					_errHandler.sync(this);
+					switch ( getInterpreter().adaptivePredict(_input,1,_ctx) ) {
+					case 1:
+						{
+						_localctx = new InfixExprContext(new ExprContext(_parentctx, _parentState));
+						((InfixExprContext)_localctx).left = _prevctx;
+						pushNewRecursionContext(_localctx, _startState, RULE_expr);
+						setState(15);
+						if (!(precpred(_ctx, 3))) throw new FailedPredicateException(this, "precpred(_ctx, 3)");
+						setState(16);
+						((InfixExprContext)_localctx).op = _input.LT(1);
+						_la = _input.LA(1);
+						if ( !(_la==OP_MUL || _la==OP_DIV) ) {
+							((InfixExprContext)_localctx).op = (Token)_errHandler.recoverInline(this);
+						}
+						else {
+							if ( _input.LA(1)==Token.EOF ) matchedEOF = true;
+							_errHandler.reportMatch(this);
+							consume();
+						}
+						setState(17);
+						((InfixExprContext)_localctx).right = expr(4);
+						}
+						break;
+					case 2:
+						{
+						_localctx = new InfixExprContext(new ExprContext(_parentctx, _parentState));
+						((InfixExprContext)_localctx).left = _prevctx;
+						pushNewRecursionContext(_localctx, _startState, RULE_expr);
+						setState(18);
+						if (!(precpred(_ctx, 2))) throw new FailedPredicateException(this, "precpred(_ctx, 2)");
+						setState(19);
+						((InfixExprContext)_localctx).op = _input.LT(1);
+						_la = _input.LA(1);
+						if ( !(_la==OP_ADD || _la==OP_SUB) ) {
+							((InfixExprContext)_localctx).op = (Token)_errHandler.recoverInline(this);
+						}
+						else {
+							if ( _input.LA(1)==Token.EOF ) matchedEOF = true;
+							_errHandler.reportMatch(this);
+							consume();
+						}
+						setState(20);
+						((InfixExprContext)_localctx).right = expr(3);
+						}
+						break;
 					}
 					} 
 				}
-				setState(22);
+				setState(25);
 				_errHandler.sync(this);
-				_alt = getInterpreter().adaptivePredict(_input,1,_ctx);
+				_alt = getInterpreter().adaptivePredict(_input,2,_ctx);
 			}
 			}
 		}
@@ -305,20 +336,23 @@ public class Cr01Parser extends Parser {
 	private boolean expr_sempred(ExprContext _localctx, int predIndex) {
 		switch (predIndex) {
 		case 0:
+			return precpred(_ctx, 3);
+		case 1:
 			return precpred(_ctx, 2);
 		}
 		return true;
 	}
 
 	public static final String _serializedATN =
-		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3\t\32\4\2\t\2\4\3"+
-		"\t\3\3\2\3\2\3\2\3\3\3\3\3\3\3\3\3\3\3\3\5\3\20\n\3\3\3\3\3\3\3\7\3\25"+
-		"\n\3\f\3\16\3\30\13\3\3\3\2\3\4\4\2\4\2\4\3\3\t\t\3\2\5\6\2\31\2\6\3\2"+
-		"\2\2\4\17\3\2\2\2\6\7\5\4\3\2\7\b\t\2\2\2\b\3\3\2\2\2\t\n\b\3\1\2\n\13"+
-		"\7\3\2\2\13\f\5\4\3\2\f\r\7\4\2\2\r\20\3\2\2\2\16\20\7\7\2\2\17\t\3\2"+
-		"\2\2\17\16\3\2\2\2\20\26\3\2\2\2\21\22\f\4\2\2\22\23\t\3\2\2\23\25\5\4"+
-		"\3\5\24\21\3\2\2\2\25\30\3\2\2\2\26\24\3\2\2\2\26\27\3\2\2\2\27\5\3\2"+
-		"\2\2\30\26\3\2\2\2\4\17\26";
+		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3\13\35\4\2\t\2\4\3"+
+		"\t\3\3\2\3\2\3\2\3\3\3\3\3\3\3\3\3\3\3\3\5\3\20\n\3\3\3\3\3\3\3\3\3\3"+
+		"\3\3\3\7\3\30\n\3\f\3\16\3\33\13\3\3\3\2\3\4\4\2\4\2\5\3\3\13\13\3\2\7"+
+		"\b\3\2\5\6\2\35\2\6\3\2\2\2\4\17\3\2\2\2\6\7\5\4\3\2\7\b\t\2\2\2\b\3\3"+
+		"\2\2\2\t\n\b\3\1\2\n\13\7\3\2\2\13\f\5\4\3\2\f\r\7\4\2\2\r\20\3\2\2\2"+
+		"\16\20\7\t\2\2\17\t\3\2\2\2\17\16\3\2\2\2\20\31\3\2\2\2\21\22\f\5\2\2"+
+		"\22\23\t\3\2\2\23\30\5\4\3\6\24\25\f\4\2\2\25\26\t\4\2\2\26\30\5\4\3\5"+
+		"\27\21\3\2\2\2\27\24\3\2\2\2\30\33\3\2\2\2\31\27\3\2\2\2\31\32\3\2\2\2"+
+		"\32\5\3\2\2\2\33\31\3\2\2\2\5\17\27\31";
 	public static final ATN _ATN =
 		new ATNDeserializer().deserialize(_serializedATN.toCharArray());
 	static {

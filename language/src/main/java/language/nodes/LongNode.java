@@ -4,7 +4,7 @@ import com.oracle.truffle.api.frame.VirtualFrame;
 import com.oracle.truffle.api.nodes.NodeInfo;
 
 @NodeInfo(shortName = "value")
-public class LongNode extends ExprNode {
+public final class LongNode extends ExprNode {
     private long value;
 
     public LongNode(long value) {

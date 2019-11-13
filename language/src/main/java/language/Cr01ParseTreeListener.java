@@ -1,9 +1,6 @@
 package language;
 
-import language.nodes.AddNodeGen;
-import language.nodes.ExprNode;
-import language.nodes.LongNode;
-import language.nodes.SubNodeGen;
+import language.nodes.*;
 import language.parser.Cr01BaseListener;
 import language.parser.Cr01Lexer;
 import language.parser.Cr01Parser;
@@ -35,6 +32,12 @@ public class Cr01ParseTreeListener extends Cr01BaseListener {
                 break;
             case Cr01Lexer.OP_SUB:
                 current = SubNodeGen.create(left, right);
+                break;
+            case Cr01Lexer.OP_MUL:
+                current = MulNodeGen.create(left, right);
+                break;
+            case Cr01Lexer.OP_DIV:
+                current = DivNodeGen.create(left, right);
                 break;
         }
         nodes.push(current);

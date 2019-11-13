@@ -41,3 +41,7 @@ application {
     mainClassName = 'launcher.App'
     applicationDefaultJvmArgs = ['-Dtruffle.class.path.append=../language/build/classes/java/main']
 }
+
+run {
+    standardInput = System.in
+}
