@@ -30,6 +30,7 @@ dependencies {
     testImplementation 'junit:junit:4.12'
 
     // Graal
+    implementation "org.graalvm.sdk:graal-sdk:${graalVersion}"
     implementation "org.graalvm.truffle:truffle-api:${graalVersion}"
     implementation "org.graalvm.truffle:truffle-dsl-processor:${graalVersion}"
     annotationProcessor "org.graalvm.truffle:truffle-api:${graalVersion}"

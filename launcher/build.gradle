@@ -28,6 +28,9 @@ dependencies {
     testImplementation 'junit:junit:4.12'
 
     implementation 'org.graalvm.sdk:graal-sdk:19.2.1'
+    implementation 'org.graalvm.truffle:truffle-api:19.2.1'
+
+    implementation files("../language/build/classes/java/main")
 }
 
 application {

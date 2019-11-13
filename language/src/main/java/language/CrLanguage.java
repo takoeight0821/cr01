@@ -48,7 +48,7 @@ public class CrLanguage extends TruffleLanguage<CrContext>{
     protected CallTarget parse(ParsingRequest request) throws Exception {
         String text = request.getSource().getCharacters().toString();
         long value = Long.parseLong(text);
-        CrRootNode node = new CrRootNode(this, new FrameDescriptor(), AddNodeGen.create(new LongNode(value), new LongNode(value)));
+        var node = new CrRootNode(this, new FrameDescriptor(), AddNodeGen.create(new LongNode(value), new LongNode(value)));
         return Truffle.getRuntime().createCallTarget(node);
     }
     
