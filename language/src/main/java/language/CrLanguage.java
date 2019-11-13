@@ -6,7 +6,7 @@ import com.oracle.truffle.api.TruffleLanguage;
 import com.oracle.truffle.api.frame.FrameDescriptor;
 import com.oracle.truffle.api.interop.InteropLibrary;
 import com.oracle.truffle.api.source.Source;
-import language.nodes.CrExprNode;
+import language.nodes.ExprNode;
 import language.nodes.CrRootNode;
 import language.parser.Cr01Lexer;
 import language.parser.Cr01Parser;
@@ -48,12 +48,12 @@ public class CrLanguage extends TruffleLanguage<CrContext>{
 
     @Override
     protected CallTarget parse(ParsingRequest request) throws Exception {
-        CrExprNode ast = parseSource(request.getSource());
+        ExprNode ast = parseSource(request.getSource());
         var root = new CrRootNode(this, new FrameDescriptor(), ast);
         return Truffle.getRuntime().createCallTarget(root);
     }
 
-    private CrExprNode parseSource(Source source) {
+    private ExprNode parseSource(Source source) {
         var charStream = CharStreams.fromString(source.getCharacters().toString());
         var lexer = new Cr01Lexer(charStream);
         var parser = new Cr01Parser(new CommonTokenStream(lexer));

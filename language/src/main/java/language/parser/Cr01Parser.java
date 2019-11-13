@@ -17,7 +17,7 @@ public class Cr01Parser extends Parser {
 	protected static final PredictionContextCache _sharedContextCache =
 		new PredictionContextCache();
 	public static final int
-		T__0=1, T__1=2, OP_ADD=3, NUM=4, WS=5, NEWLINE=6;
+		T__0=1, T__1=2, OP_ADD=3, OP_SUB=4, NUM=5, WS=6, NEWLINE=7;
 	public static final int
 		RULE_prog = 0, RULE_expr = 1;
 	private static String[] makeRuleNames() {
@@ -29,13 +29,13 @@ public class Cr01Parser extends Parser {
 
 	private static String[] makeLiteralNames() {
 		return new String[] {
-			null, "'('", "')'", "'+'"
+			null, "'('", "')'", "'+'", "'-'"
 		};
 	}
 	private static final String[] _LITERAL_NAMES = makeLiteralNames();
 	private static String[] makeSymbolicNames() {
 		return new String[] {
-			null, null, null, "OP_ADD", "NUM", "WS", "NEWLINE"
+			null, null, null, "OP_ADD", "OP_SUB", "NUM", "WS", "NEWLINE"
 		};
 	}
 	private static final String[] _SYMBOLIC_NAMES = makeSymbolicNames();
@@ -163,6 +163,7 @@ public class Cr01Parser extends Parser {
 			return getRuleContext(ExprContext.class,i);
 		}
 		public TerminalNode OP_ADD() { return getToken(Cr01Parser.OP_ADD, 0); }
+		public TerminalNode OP_SUB() { return getToken(Cr01Parser.OP_SUB, 0); }
 		public InfixExprContext(ExprContext ctx) { copyFrom(ctx); }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
@@ -212,6 +213,7 @@ public class Cr01Parser extends Parser {
 		ExprContext _prevctx = _localctx;
 		int _startState = 2;
 		enterRecursionRule(_localctx, 2, RULE_expr, _p);
+		int _la;
 		try {
 			int _alt;
 			enterOuterAlt(_localctx, 1);
@@ -261,7 +263,16 @@ public class Cr01Parser extends Parser {
 					setState(15);
 					if (!(precpred(_ctx, 2))) throw new FailedPredicateException(this, "precpred(_ctx, 2)");
 					setState(16);
-					((InfixExprContext)_localctx).op = match(OP_ADD);
+					((InfixExprContext)_localctx).op = _input.LT(1);
+					_la = _input.LA(1);
+					if ( !(_la==OP_ADD || _la==OP_SUB) ) {
+						((InfixExprContext)_localctx).op = (Token)_errHandler.recoverInline(this);
+					}
+					else {
+						if ( _input.LA(1)==Token.EOF ) matchedEOF = true;
+						_errHandler.reportMatch(this);
+						consume();
+					}
 					setState(17);
 					((InfixExprContext)_localctx).right = expr(3);
 					}
@@ -300,14 +311,14 @@ public class Cr01Parser extends Parser {
 	}
 
 	public static final String _serializedATN =
-		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3\b\32\4\2\t\2\4\3"+
+		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3\t\32\4\2\t\2\4\3"+
 		"\t\3\3\2\3\2\3\2\3\3\3\3\3\3\3\3\3\3\3\3\5\3\20\n\3\3\3\3\3\3\3\7\3\25"+
-		"\n\3\f\3\16\3\30\13\3\3\3\2\3\4\4\2\4\2\3\3\3\b\b\2\31\2\6\3\2\2\2\4\17"+
-		"\3\2\2\2\6\7\5\4\3\2\7\b\t\2\2\2\b\3\3\2\2\2\t\n\b\3\1\2\n\13\7\3\2\2"+
-		"\13\f\5\4\3\2\f\r\7\4\2\2\r\20\3\2\2\2\16\20\7\6\2\2\17\t\3\2\2\2\17\16"+
-		"\3\2\2\2\20\26\3\2\2\2\21\22\f\4\2\2\22\23\7\5\2\2\23\25\5\4\3\5\24\21"+
-		"\3\2\2\2\25\30\3\2\2\2\26\24\3\2\2\2\26\27\3\2\2\2\27\5\3\2\2\2\30\26"+
-		"\3\2\2\2\4\17\26";
+		"\n\3\f\3\16\3\30\13\3\3\3\2\3\4\4\2\4\2\4\3\3\t\t\3\2\5\6\2\31\2\6\3\2"+
+		"\2\2\4\17\3\2\2\2\6\7\5\4\3\2\7\b\t\2\2\2\b\3\3\2\2\2\t\n\b\3\1\2\n\13"+
+		"\7\3\2\2\13\f\5\4\3\2\f\r\7\4\2\2\r\20\3\2\2\2\16\20\7\7\2\2\17\t\3\2"+
+		"\2\2\17\16\3\2\2\2\20\26\3\2\2\2\21\22\f\4\2\2\22\23\t\3\2\2\23\25\5\4"+
+		"\3\5\24\21\3\2\2\2\25\30\3\2\2\2\26\24\3\2\2\2\26\27\3\2\2\2\27\5\3\2"+
+		"\2\2\30\26\3\2\2\2\4\17\26";
 	public static final ATN _ATN =
 		new ATNDeserializer().deserialize(_serializedATN.toCharArray());
 	static {

@@ -1,9 +1,9 @@
 package language;
 
-import language.CrLanguage;
 import language.nodes.AddNodeGen;
-import language.nodes.CrExprNode;
+import language.nodes.ExprNode;
 import language.nodes.LongNode;
+import language.nodes.SubNodeGen;
 import language.parser.Cr01BaseListener;
 import language.parser.Cr01Lexer;
 import language.parser.Cr01Parser;
@@ -11,10 +11,10 @@ import language.parser.Cr01Parser;
 import java.util.LinkedList;
 
 public class Cr01ParseTreeListener extends Cr01BaseListener {
-    private CrExprNode expr;
-    private LinkedList<CrExprNode> nodes = new LinkedList<>();
+    private ExprNode expr;
+    private LinkedList<ExprNode> nodes = new LinkedList<>();
 
-    public CrExprNode getExpr() {
+    ExprNode getExpr() {
         return expr;
     }
 
@@ -28,12 +28,14 @@ public class Cr01ParseTreeListener extends Cr01BaseListener {
         var right = nodes.pop();
         var left = nodes.pop();
 
-        CrExprNode current = null;
+        ExprNode current = null;
         switch (ctx.op.getType()) {
-            case Cr01Lexer
-                    .OP_ADD:
+            case Cr01Lexer.OP_ADD:
                 current = AddNodeGen.create(left, right);
-            break;
+                break;
+            case Cr01Lexer.OP_SUB:
+                current = SubNodeGen.create(left, right);
+                break;
         }
         nodes.push(current);
     }

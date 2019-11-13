@@ -6,9 +6,9 @@ import com.oracle.truffle.api.nodes.RootNode;
 import language.CrLanguage;
 
 public class CrRootNode extends RootNode {
-    @Child private CrExprNode bodyNode;
+    @Child private ExprNode bodyNode;
 
-    public CrRootNode(CrLanguage language, FrameDescriptor frameDescriptor, CrExprNode bodyNode) {
+    public CrRootNode(CrLanguage language, FrameDescriptor frameDescriptor, ExprNode bodyNode) {
         super(language, frameDescriptor);
         this.bodyNode = bodyNode;
     }

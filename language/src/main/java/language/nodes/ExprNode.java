@@ -7,6 +7,6 @@ import com.oracle.truffle.api.nodes.NodeInfo;
 
 @TypeSystemReference(CrTypes.class)
 @NodeInfo(description = "The abstract base node for all expressions")
-public abstract class CrExprNode extends Node{
+public abstract class ExprNode extends Node{
     public abstract Object executeGeneric(VirtualFrame frame);
 }
