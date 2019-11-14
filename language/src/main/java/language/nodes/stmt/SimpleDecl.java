@@ -14,18 +14,18 @@ public abstract class SimpleDecl extends StmtNode {
     protected abstract FrameSlot getSlot();
 
     @Specialization(guards = "isLongOrIllegal(frame)")
-    protected void declLong(VirtualFrame frame, long value) {
+    void declLong(VirtualFrame frame, long value) {
         frame.getFrameDescriptor().setFrameSlotKind(getSlot(), FrameSlotKind.Long);
         frame.setLong(getSlot(), value);
     }
 
     @Specialization(replaces = "declLong")
-    protected void decl(VirtualFrame frame, Object value) {
+    void decl(VirtualFrame frame, Object value) {
         frame.getFrameDescriptor().setFrameSlotKind(getSlot(), FrameSlotKind.Object);
         frame.setObject(getSlot(), value);
     }
 
-    protected boolean isLongOrIllegal(VirtualFrame frame) {
+    boolean isLongOrIllegal(VirtualFrame frame) {
         final FrameSlotKind kind = frame.getFrameDescriptor().getFrameSlotKind(getSlot());
         return kind == FrameSlotKind.Long || kind == FrameSlotKind.Illegal;
     }

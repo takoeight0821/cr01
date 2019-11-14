@@ -8,12 +8,12 @@ import language.CrException;
 @NodeInfo(shortName = "+")
 public abstract class AddNode extends BinaryNode {
     @Specialization
-    public long add(long left, long right) {
+    long add(long left, long right) {
         return left + right;
     }
 
     @Fallback
-    protected Object typeError(Object left, Object right) {
+    Object typeError(Object left, Object right) {
         throw CrException.typeError(this, left, right);
     }
 }

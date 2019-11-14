@@ -9,12 +9,12 @@ import language.nodes.expr.BinaryNode;
 @NodeInfo(shortName = "-")
 public abstract class SubNode extends BinaryNode {
     @Specialization
-    public long sub(long left, long right) {
+    long sub(long left, long right) {
         return left - right;
     }
 
     @Fallback
-    protected Object typeError(Object left, Object right) {
+    Object typeError(Object left, Object right) {
         throw CrException.typeError(this, left, right);
     }
 }

@@ -1,6 +1,5 @@
 package language;
 
-import com.oracle.truffle.api.CompilerDirectives;
 import com.oracle.truffle.api.TruffleException;
 import com.oracle.truffle.api.interop.InteropLibrary;
 import com.oracle.truffle.api.nodes.Node;
@@ -12,7 +11,7 @@ public class CrException extends RuntimeException implements TruffleException {
 
     private final Node location;
 
-    public CrException(String message, Node location) {
+    private CrException(String message, Node location) {
         super(message);
         this.location = location;
     }
@@ -56,8 +55,9 @@ public class CrException extends RuntimeException implements TruffleException {
                     result.append("\"");
                 }
                 result.append(CrLanguage.toString(value));
-                if (InteropLibrary.getFactory().getUncached().isString(value));
-                result.append("\"");
+                if (InteropLibrary.getFactory().getUncached().isString(value)) {
+                    result.append("\"");
+                }
             }
         }
         return new CrException(result.toString(), operation);

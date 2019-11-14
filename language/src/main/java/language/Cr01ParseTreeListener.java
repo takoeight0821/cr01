@@ -62,8 +62,8 @@ public class Cr01ParseTreeListener extends Cr01BaseListener {
     }
 
     static class LexicalScope {
-        protected final LexicalScope outer;
-        protected final Map<String, FrameSlot> locals;
+        final LexicalScope outer;
+        final Map<String, FrameSlot> locals;
 
         LexicalScope(LexicalScope outer) {
             this.outer = outer;

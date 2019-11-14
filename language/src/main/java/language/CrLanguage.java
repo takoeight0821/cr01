@@ -20,11 +20,11 @@ import org.antlr.v4.runtime.tree.ParseTreeWalker;
 public class CrLanguage extends TruffleLanguage<CrContext>{
     static final String MIME = "application/x-cr01";
 
-    public static String toString(Object value) {
+    static String toString(Object value) {
         return value.toString();
     }
 
-    public static String getTypeInfo(Object value) {
+    static String getTypeInfo(Object value) {
         if (value == null) {
             return "ANY";
         }

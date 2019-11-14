@@ -9,12 +9,12 @@ import language.nodes.expr.BinaryNode;
 @NodeInfo(shortName="/")
 public abstract class DivNode extends BinaryNode {
     @Specialization
-    public long div(long left, long right) {
+    long div(long left, long right) {
         return left / right;
     }
 
     @Fallback
-    protected Object typeError(Object left, Object right) {
+    Object typeError(Object left, Object right) {
         throw CrException.typeError(this, left, right);
     }
 }
