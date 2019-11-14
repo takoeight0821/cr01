@@ -8,16 +8,18 @@ prog : (funDecl ';')+ (EOF | NEWLINE) ;
 
 funDecl : name=ID (params+=ID)+ '=' expr ;
 
-expr : '(' expr ')' #parensExpr
+simpleExpr : '(' expr ')' #parensExpr
+           | name=ID #varExpr
+           | value=NUM #numberExpr
+           ;
+
+expr : func=simpleExpr (args+=simpleExpr)* #applyExpr
      | left=expr op=('*' | '/') right=expr #infixExpr
      | left=expr op=('+' | '-') right=expr #infixExpr
-     | name=ID #varExpr
-     | value=NUM #numberExpr
      | 'let' var_decl 'in' body=expr #letExpr
      ;
 
-var_decl : name=ID '=' value=expr #simpleDecl
-     ;
+var_decl : name=ID '=' value=expr #simpleDecl ;
 
 OP_ADD: '+';
 OP_SUB: '-';

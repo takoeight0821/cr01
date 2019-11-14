@@ -1,17 +1,17 @@
-package language;
+package language.runtime;
 
 import com.oracle.truffle.api.TruffleException;
 import com.oracle.truffle.api.interop.InteropLibrary;
 import com.oracle.truffle.api.nodes.Node;
 import com.oracle.truffle.api.nodes.NodeInfo;
 import com.oracle.truffle.api.source.SourceSection;
-import language.runtime.CrContext;
+import language.CrLanguage;
 
 public class CrException extends RuntimeException implements TruffleException {
 
     private final Node location;
 
-    private CrException(String message, Node location) {
+    CrException(String message, Node location) {
         super(message);
         this.location = location;
     }

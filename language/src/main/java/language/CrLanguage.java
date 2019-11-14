@@ -2,10 +2,14 @@ package language;
 
 import com.oracle.truffle.api.CallTarget;
 import com.oracle.truffle.api.RootCallTarget;
+import com.oracle.truffle.api.Truffle;
 import com.oracle.truffle.api.TruffleLanguage;
 import com.oracle.truffle.api.frame.FrameDescriptor;
 import com.oracle.truffle.api.interop.InteropLibrary;
+import com.oracle.truffle.api.nodes.NodeUtil;
+import com.oracle.truffle.api.nodes.RootNode;
 import com.oracle.truffle.api.source.Source;
+import language.nodes.CrEvalRootNode;
 import language.parser.Cr01Lexer;
 import language.parser.Cr01Parser;
 import language.runtime.CrContext;
@@ -20,11 +24,11 @@ import java.util.Map;
 public class CrLanguage extends TruffleLanguage<CrContext>{
     static final String MIME = "application/x-cr01";
 
-    static String toString(Object value) {
+    public static String toString(Object value) {
         return value.toString();
     }
 
-    static String getTypeInfo(Object value) {
+    public static String getTypeInfo(Object value) {
         if (value == null) {
             return "ANY";
         }
@@ -47,13 +51,19 @@ public class CrLanguage extends TruffleLanguage<CrContext>{
     }
 
     @Override
-    protected CallTarget parse(ParsingRequest request) throws Exception {
-        FrameDescriptor frameDescriptor = new FrameDescriptor();
-        var functions = parseSource(request.getSource(), frameDescriptor);
-        return functions.get("main");
+    protected CallTarget parse(ParsingRequest request) {
+        var functions = parseSource(request.getSource());
+        RootCallTarget main = functions.get("main");
+        RootNode evalMain;
+        if (main != null) {
+            evalMain = new CrEvalRootNode(this, main, functions);
+        } else {
+            evalMain = new CrEvalRootNode(this, null, functions);
+        }
+        return Truffle.getRuntime().createCallTarget(evalMain);
     }
 
-    private Map<String, RootCallTarget> parseSource(Source source, FrameDescriptor frameDescriptor) {
+    private Map<String, RootCallTarget> parseSource(Source source) {
         var charStream = CharStreams.fromString(source.getCharacters().toString());
         var lexer = new Cr01Lexer(charStream);
         var parser = new Cr01Parser(new CommonTokenStream(lexer));
@@ -66,7 +76,7 @@ public class CrLanguage extends TruffleLanguage<CrContext>{
 
     @Override
     protected CrContext createContext(Env env) {
-        return new CrContext();
+        return new CrContext(this);
     }
 
     @Override

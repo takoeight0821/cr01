@@ -3,7 +3,7 @@ package language.nodes.expr;
 import com.oracle.truffle.api.dsl.Fallback;
 import com.oracle.truffle.api.dsl.Specialization;
 import com.oracle.truffle.api.nodes.NodeInfo;
-import language.CrException;
+import language.runtime.CrException;
 
 @NodeInfo(shortName = "+")
 public abstract class AddNode extends BinaryNode {
