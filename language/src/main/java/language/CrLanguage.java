@@ -4,9 +4,7 @@ import com.oracle.truffle.api.CallTarget;
 import com.oracle.truffle.api.RootCallTarget;
 import com.oracle.truffle.api.Truffle;
 import com.oracle.truffle.api.TruffleLanguage;
-import com.oracle.truffle.api.frame.FrameDescriptor;
 import com.oracle.truffle.api.interop.InteropLibrary;
-import com.oracle.truffle.api.nodes.NodeUtil;
 import com.oracle.truffle.api.nodes.RootNode;
 import com.oracle.truffle.api.source.Source;
 import language.nodes.CrEvalRootNode;
@@ -21,7 +19,7 @@ import java.util.Map;
 
 @TruffleLanguage.Registration(name = "cr01", id = "cr01",
         defaultMimeType = CrLanguage.MIME, characterMimeTypes = CrLanguage.MIME)
-public class CrLanguage extends TruffleLanguage<CrContext>{
+public class CrLanguage extends TruffleLanguage<CrContext> {
     static final String MIME = "application/x-cr01";
 
     public static String toString(Object value) {

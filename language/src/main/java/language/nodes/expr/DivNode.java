@@ -5,7 +5,7 @@ import com.oracle.truffle.api.dsl.Specialization;
 import com.oracle.truffle.api.nodes.NodeInfo;
 import language.runtime.CrException;
 
-@NodeInfo(shortName="/")
+@NodeInfo(shortName = "/")
 public abstract class DivNode extends BinaryNode {
     @Specialization
     long div(long left, long right) {

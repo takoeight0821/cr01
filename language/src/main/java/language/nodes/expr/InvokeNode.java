@@ -1,7 +1,6 @@
 package language.nodes.expr;
 
 import com.oracle.truffle.api.CompilerAsserts;
-import com.oracle.truffle.api.CompilerDirectives;
 import com.oracle.truffle.api.frame.VirtualFrame;
 import com.oracle.truffle.api.interop.ArityException;
 import com.oracle.truffle.api.interop.InteropLibrary;
@@ -15,9 +14,12 @@ import java.util.Arrays;
 
 @NodeInfo(shortName = "invoke")
 public final class InvokeNode extends ExprNode {
-    @Child private ExprNode functionNode;
-    @Children private final ExprNode[] argumentNodes;
-    @Child private InteropLibrary library;
+    @Child
+    private ExprNode functionNode;
+    @Children
+    private final ExprNode[] argumentNodes;
+    @Child
+    private InteropLibrary library;
 
     public InvokeNode(ExprNode functionNode, ExprNode[] argumentNodes) {
         this.functionNode = functionNode;
@@ -39,7 +41,9 @@ public final class InvokeNode extends ExprNode {
          */
         CompilerAsserts.compilationConstant(argumentNodes.length);
 
-        Object[] argumentValues = Arrays.stream(argumentNodes).map((node) -> { return node.executeGeneric(frame); }).toArray();
+        Object[] argumentValues = Arrays.stream(argumentNodes).map((node) -> {
+            return node.executeGeneric(frame);
+        }).toArray();
 
         try {
             return library.execute(function, argumentValues);

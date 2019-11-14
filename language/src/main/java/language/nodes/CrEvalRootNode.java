@@ -6,7 +6,6 @@ import com.oracle.truffle.api.RootCallTarget;
 import com.oracle.truffle.api.TruffleLanguage;
 import com.oracle.truffle.api.frame.VirtualFrame;
 import com.oracle.truffle.api.nodes.DirectCallNode;
-import com.oracle.truffle.api.nodes.NodeUtil;
 import com.oracle.truffle.api.nodes.RootNode;
 import language.CrLanguage;
 import language.runtime.CrContext;
@@ -25,9 +24,11 @@ import java.util.Map;
  */
 public final class CrEvalRootNode extends RootNode {
     private final Map<String, RootCallTarget> functions;
-    @Child private DirectCallNode mainCallNode;
+    @Child
+    private DirectCallNode mainCallNode;
     private final TruffleLanguage.ContextReference<CrContext> reference;
-    @CompilationFinal private boolean registered;
+    @CompilationFinal
+    private boolean registered;
 
     public CrEvalRootNode(CrLanguage language, RootCallTarget rootFunction, Map<String, RootCallTarget> functions) {
         super(language); // internal frame

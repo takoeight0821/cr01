@@ -43,7 +43,7 @@ public class CrException extends RuntimeException implements TruffleException {
         result.append(" not defined for");
 
         String sep = " ";
-        for (Object value: values) {
+        for (Object value : values) {
             result.append(sep);
             sep = ", ";
             if (value == null || InteropLibrary.getFactory().getUncached().isNull(value)) {

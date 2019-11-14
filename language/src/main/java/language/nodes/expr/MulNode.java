@@ -5,7 +5,7 @@ import com.oracle.truffle.api.dsl.Specialization;
 import com.oracle.truffle.api.nodes.NodeInfo;
 import language.runtime.CrException;
 
-@NodeInfo(shortName="*")
+@NodeInfo(shortName = "*")
 public abstract class MulNode extends BinaryNode {
     @Specialization
     long mul(long left, long right) {

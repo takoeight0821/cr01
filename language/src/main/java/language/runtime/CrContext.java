@@ -11,7 +11,7 @@ public final class CrContext {
 
     public CrContext(CrLanguage language) {
         this.language = language;
-        this.functionRegistry = new CrFunctionRegistry( this.language);
+        this.functionRegistry = new CrFunctionRegistry(this.language);
     }
 
     /* function environment */

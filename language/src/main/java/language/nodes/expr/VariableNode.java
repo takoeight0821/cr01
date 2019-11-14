@@ -2,8 +2,10 @@ package language.nodes.expr;
 
 import com.oracle.truffle.api.dsl.NodeField;
 import com.oracle.truffle.api.dsl.Specialization;
-import com.oracle.truffle.api.frame.*;
-import language.nodes.expr.ExprNode;
+import com.oracle.truffle.api.frame.FrameSlot;
+import com.oracle.truffle.api.frame.FrameSlotKind;
+import com.oracle.truffle.api.frame.FrameUtil;
+import com.oracle.truffle.api.frame.VirtualFrame;
 
 @NodeField(name = "slot", type = FrameSlot.class)
 public abstract class VariableNode extends ExprNode {

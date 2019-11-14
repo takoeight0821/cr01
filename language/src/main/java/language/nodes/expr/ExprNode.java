@@ -12,6 +12,7 @@ import language.nodes.CrTypesGen;
 @NodeInfo(description = "The abstract base node for all expressions")
 public abstract class ExprNode extends Node {
     public abstract Object executeGeneric(VirtualFrame frame);
+
     public long executeLong(VirtualFrame frame) throws UnexpectedResultException {
         return CrTypesGen.expectLong(executeGeneric(frame));
     }

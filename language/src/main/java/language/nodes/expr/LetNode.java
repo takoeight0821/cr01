@@ -7,8 +7,10 @@ import language.nodes.stmt.SimpleDeclNode;
 
 @NodeInfo(shortName = "let")
 public final class LetNode extends ExprNode {
-    @Children private final SimpleDeclNode[] declNodes;
-    @Child private ExprNode bodyNode;
+    @Children
+    private final SimpleDeclNode[] declNodes;
+    @Child
+    private ExprNode bodyNode;
 
     public LetNode(SimpleDeclNode[] declNodes, ExprNode bodyNode) {
         this.declNodes = declNodes;
@@ -18,7 +20,7 @@ public final class LetNode extends ExprNode {
     @ExplodeLoop
     @Override
     public Object executeGeneric(VirtualFrame frame) {
-        for ( var declNode : declNodes) {
+        for (var declNode : declNodes) {
             declNode.executeVoid(frame);
         }
         return bodyNode.executeGeneric(frame);

@@ -5,7 +5,6 @@ import com.oracle.truffle.api.Truffle;
 import com.oracle.truffle.api.frame.FrameDescriptor;
 import com.oracle.truffle.api.frame.FrameSlot;
 import com.oracle.truffle.api.frame.FrameSlotKind;
-import com.oracle.truffle.api.nodes.NodeUtil;
 import language.nodes.CrRootNode;
 import language.nodes.expr.*;
 import language.nodes.stmt.SimpleDeclNode;
@@ -145,7 +144,7 @@ public class Cr01ParseTreeListener extends Cr01BaseListener {
     @Override
     public void exitLetExpr(Cr01Parser.LetExprContext ctx) {
         ExprNode bodyNode = nodes.pop();
-        SimpleDeclNode[] declNodes = { declNode };
+        SimpleDeclNode[] declNodes = {declNode};
         nodes.push(new LetNode(declNodes, bodyNode));
         lexicalScope = lexicalScope.outer;
     }
