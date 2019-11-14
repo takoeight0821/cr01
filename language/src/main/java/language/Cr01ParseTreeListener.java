@@ -1,8 +1,11 @@
 package language;
 
+import com.oracle.truffle.api.RootCallTarget;
+import com.oracle.truffle.api.Truffle;
 import com.oracle.truffle.api.frame.FrameDescriptor;
 import com.oracle.truffle.api.frame.FrameSlot;
 import com.oracle.truffle.api.frame.FrameSlotKind;
+import language.nodes.CrRootNode;
 import language.nodes.expr.*;
 import language.nodes.stmt.SimpleDecl;
 import language.nodes.stmt.SimpleDeclNodeGen;
@@ -15,21 +18,54 @@ import java.util.LinkedList;
 import java.util.Map;
 
 public class Cr01ParseTreeListener extends Cr01BaseListener {
-    private ExprNode expr;
+    private Map<String, RootCallTarget> functions;
     private LinkedList<ExprNode> nodes = new LinkedList<>();
     private FrameDescriptor frameDescriptor;
+    private String functionName;
+    private LinkedList<SimpleDecl> parameterDecls;
+    private CrLanguage language;
 
-    public Cr01ParseTreeListener(FrameDescriptor frameDescriptor) {
-        this.frameDescriptor = frameDescriptor;
+    static class LexicalScope {
+        final LexicalScope outer;
+        final Map<String, FrameSlot> locals;
+
+        LexicalScope(LexicalScope outer) {
+            this.outer = outer;
+            this.locals = new HashMap<>();
+            if (outer != null) {
+                locals.putAll(outer.locals);
+            }
+        }
     }
 
-    ExprNode getExpr() {
-        return expr;
+    private LexicalScope lexicalScope;
+
+    public Cr01ParseTreeListener(CrLanguage language) {
+        this.language = language;
+        this.functions = new HashMap<>();
+    }
+
+    Map<String, RootCallTarget> getFunctions() {
+        return functions;
     }
 
     @Override
-    public void exitProg(Cr01Parser.ProgContext ctx) {
-        expr = nodes.pop();
+    public void enterFunDecl(Cr01Parser.FunDeclContext ctx) {
+        functionName = ctx.name.getText();
+        frameDescriptor = new FrameDescriptor();
+        parameterDecls = new LinkedList<>();
+        lexicalScope = new LexicalScope(null);
+        for (int i = 0; i < ctx.params.size(); i++) {
+            var frameSlot = frameDescriptor.addFrameSlot(ctx.params.get(i).getText());
+            parameterDecls.push(SimpleDeclNodeGen.create(new ReadArgumentNode(i),
+                    frameSlot));
+            lexicalScope.locals.put(ctx.params.get(i).getText(), frameSlot);
+        }
+    }
+
+    @Override
+    public void exitFunDecl(Cr01Parser.FunDeclContext ctx) {
+        functions.put(functionName, Truffle.getRuntime().createCallTarget(new CrRootNode(language, frameDescriptor, nodes.pop())));
     }
 
     @Override
@@ -61,21 +97,6 @@ public class Cr01ParseTreeListener extends Cr01BaseListener {
         nodes.push(new LongNode(Long.parseLong(text)));
     }
 
-    static class LexicalScope {
-        final LexicalScope outer;
-        final Map<String, FrameSlot> locals;
-
-        LexicalScope(LexicalScope outer) {
-            this.outer = outer;
-            this.locals = new HashMap<>();
-            if (outer != null) {
-                locals.putAll(outer.locals);
-            }
-        }
-    }
-
-    private LexicalScope lexicalScope;
-
     @Override
     public void exitVarExpr(Cr01Parser.VarExprContext ctx) {
         String name = ctx.name.getText();
@@ -102,7 +123,8 @@ public class Cr01ParseTreeListener extends Cr01BaseListener {
     @Override
     public void exitLetExpr(Cr01Parser.LetExprContext ctx) {
         ExprNode bodyNode = nodes.pop();
-        nodes.push(new LetNode(declNode, bodyNode));
+        SimpleDecl[] declNodes = { declNode };
+        nodes.push(new LetNode(declNodes, bodyNode));
         lexicalScope = lexicalScope.outer;
     }
 }

@@ -4,17 +4,19 @@ grammar Cr01;
 package language.parser;
 }
 
-prog : expr (EOF | NEWLINE) ;
+prog : (funDecl ';')+ (EOF | NEWLINE) ;
+
+funDecl : name=ID (params+=ID)+ '=' expr ;
 
 expr : '(' expr ')' #parensExpr
      | left=expr op=('*' | '/') right=expr #infixExpr
      | left=expr op=('+' | '-') right=expr #infixExpr
      | name=ID #varExpr
      | value=NUM #numberExpr
-     | 'let' decl 'in' body=expr #letExpr
+     | 'let' var_decl 'in' body=expr #letExpr
      ;
 
-decl : name=ID '=' value=expr #simpleDecl
+var_decl : name=ID '=' value=expr #simpleDecl
      ;
 
 OP_ADD: '+';

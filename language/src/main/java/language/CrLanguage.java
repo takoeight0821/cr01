@@ -1,19 +1,19 @@
 package language;
 
 import com.oracle.truffle.api.CallTarget;
-import com.oracle.truffle.api.Truffle;
+import com.oracle.truffle.api.RootCallTarget;
 import com.oracle.truffle.api.TruffleLanguage;
 import com.oracle.truffle.api.frame.FrameDescriptor;
 import com.oracle.truffle.api.interop.InteropLibrary;
 import com.oracle.truffle.api.source.Source;
-import language.nodes.expr.ExprNode;
-import language.nodes.CrRootNode;
 import language.parser.Cr01Lexer;
 import language.parser.Cr01Parser;
 import language.runtime.CrContext;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
+
+import java.util.Map;
 
 @TruffleLanguage.Registration(name = "cr01", id = "cr01",
         defaultMimeType = CrLanguage.MIME, characterMimeTypes = CrLanguage.MIME)
@@ -49,20 +49,19 @@ public class CrLanguage extends TruffleLanguage<CrContext>{
     @Override
     protected CallTarget parse(ParsingRequest request) throws Exception {
         FrameDescriptor frameDescriptor = new FrameDescriptor();
-        ExprNode ast = parseSource(request.getSource(), frameDescriptor);
-        var root = new CrRootNode(this, frameDescriptor, ast);
-        return Truffle.getRuntime().createCallTarget(root);
+        var functions = parseSource(request.getSource(), frameDescriptor);
+        return functions.get("main");
     }
 
-    private ExprNode parseSource(Source source, FrameDescriptor frameDescriptor) {
+    private Map<String, RootCallTarget> parseSource(Source source, FrameDescriptor frameDescriptor) {
         var charStream = CharStreams.fromString(source.getCharacters().toString());
         var lexer = new Cr01Lexer(charStream);
         var parser = new Cr01Parser(new CommonTokenStream(lexer));
         var prog = parser.prog();
         var treeWalker = new ParseTreeWalker();
-        var listener = new Cr01ParseTreeListener(frameDescriptor);
+        var listener = new Cr01ParseTreeListener(this);
         treeWalker.walk(listener, prog);
-        return listener.getExpr();
+        return listener.getFunctions();
     }
 
     @Override

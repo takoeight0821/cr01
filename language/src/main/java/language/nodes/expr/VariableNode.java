@@ -14,6 +14,11 @@ public abstract class VariableNode extends ExprNode {
         return FrameUtil.getLongSafe(frame, getSlot());
     }
 
+    @Specialization(replaces = "readLong")
+    Object read(VirtualFrame frame) {
+        return FrameUtil.getObjectSafe(frame, getSlot());
+    }
+
     boolean isLong(VirtualFrame frame) {
         return frame.getFrameDescriptor().getFrameSlotKind(getSlot()) == FrameSlotKind.Long;
     }

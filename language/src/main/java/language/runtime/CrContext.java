@@ -1,6 +1,5 @@
 package language.runtime;
 
-import com.oracle.truffle.api.nodes.Node;
 import com.oracle.truffle.api.nodes.NodeInfo;
 
 public class CrContext {
