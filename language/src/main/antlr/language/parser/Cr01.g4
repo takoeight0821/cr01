@@ -1,17 +1,20 @@
 grammar Cr01;
 
 @header {
-  package language.parser;
+package language.parser;
 }
 
 prog : expr (EOF | NEWLINE) ;
 
-expr : 'let' name=ID '=' value=expr 'in' body=expr #letExpr
-     | '(' expr ')' #parensExpr
+expr : '(' expr ')' #parensExpr
      | left=expr op=('*' | '/') right=expr #infixExpr
      | left=expr op=('+' | '-') right=expr #infixExpr
-     | value=ID #varExpr
+     | name=ID #varExpr
      | value=NUM #numberExpr
+     | 'let' decl 'in' body=expr #letExpr
+     ;
+
+decl : name=ID '=' value=expr #simpleDecl
      ;
 
 OP_ADD: '+';

@@ -1,4 +1,4 @@
-package language.nodes;
+package language.nodes.expr;
 
 import com.oracle.truffle.api.frame.VirtualFrame;
 import com.oracle.truffle.api.nodes.NodeInfo;
@@ -15,7 +15,7 @@ public final class LongNode extends ExprNode {
         return new LongNode(Long.parseLong(v.trim()));
     }
 
-    long executeLong(VirtualFrame frame) {
+    public long executeLong(VirtualFrame frame) {
         return value;
     }
 

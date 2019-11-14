@@ -1,4 +1,4 @@
-package language.nodes;
+package language.nodes.expr;
 
 import com.oracle.truffle.api.dsl.NodeChild;
 
