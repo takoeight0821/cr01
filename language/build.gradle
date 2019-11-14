@@ -8,6 +8,7 @@
 
 plugins {
     id 'java-library'
+    id 'antlr'
 }
 
 repositories {
@@ -32,5 +33,6 @@ dependencies {
     implementation "org.graalvm.truffle:truffle-dsl-processor:19.2.1"
     annotationProcessor "org.graalvm.truffle:truffle-api:19.2.1"
     annotationProcessor "org.graalvm.truffle:truffle-dsl-processor:19.2.1"
-}
 
+    antlr "org.antlr:antlr4:4.7.2"
+}

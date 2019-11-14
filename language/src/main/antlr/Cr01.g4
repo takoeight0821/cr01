@@ -1,5 +1,9 @@
 grammar Cr01;
 
+@header {
+  package language.parser;
+}
+
 prog : expr (EOF | NEWLINE) ;
 
 expr : 'let' name=ID '=' value=expr 'in' body=expr #letExpr
