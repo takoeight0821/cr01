@@ -26,7 +26,7 @@ OP_SUB: '-';
 OP_MUL: '*';
 OP_DIV: '/';
 
-ID: [a-z][a-zA-Z0-9]*;
+ID: [a-z_][a-zA-Z0-9_]*;
 NUM: [0-9]+;
 WS: [ \t]+ -> skip;
 NEWLINE: '\r'? '\n';

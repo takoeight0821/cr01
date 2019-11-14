@@ -11,9 +11,12 @@ import com.oracle.truffle.api.nodes.DirectCallNode;
 import com.oracle.truffle.api.nodes.IndirectCallNode;
 import com.oracle.truffle.api.source.SourceSection;
 
+import java.util.LinkedList;
+import java.util.List;
+
 @ExportLibrary(InteropLibrary.class)
-public final class CrFunction implements TruffleObject {
-    public static final int INLINE_CACHE_SIZE = 2;
+public final class CrFunction implements TruffleObject, Cloneable {
+    static final int INLINE_CACHE_SIZE = 2;
 
     /**
      * The name of the function.
@@ -25,9 +28,28 @@ public final class CrFunction implements TruffleObject {
      */
     private final RootCallTarget callTarget;
 
-    public CrFunction(String name, RootCallTarget rootCallTarget) {
+    private final int parameterCount;
+
+    private List<Object> appliedArguments = new LinkedList<>();
+
+    public CrFunction(String name, int parameterCount, RootCallTarget rootCallTarget) {
         this.name = name;
+        this.parameterCount = parameterCount;
         this.callTarget = rootCallTarget;
+    }
+
+    public List<Object> getAppliedArguments() {
+        return this.appliedArguments;
+    }
+
+    public int arity() {
+        return parameterCount - appliedArguments.size();
+    }
+
+    public CrFunction partialApply(List<Object> args) {
+        CrFunction newFunc = new CrFunction(this.name, this.parameterCount, this.callTarget);
+        newFunc.appliedArguments.addAll(args);
+        return newFunc;
     }
 
     public RootCallTarget getCallTarget() {
@@ -36,7 +58,7 @@ public final class CrFunction implements TruffleObject {
 
     @Override
     public String toString() {
-        return name;
+        return name + " " + appliedArguments.toString();
     }
 
     @SuppressWarnings("static-method")

@@ -8,9 +8,12 @@ import com.oracle.truffle.api.interop.UnsupportedMessageException;
 import com.oracle.truffle.api.interop.UnsupportedTypeException;
 import com.oracle.truffle.api.nodes.ExplodeLoop;
 import com.oracle.truffle.api.nodes.NodeInfo;
+import language.runtime.CrFunction;
 import language.runtime.CrUndefinedNameException;
 
 import java.util.Arrays;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @NodeInfo(shortName = "invoke")
 public final class InvokeNode extends ExprNode {
@@ -41,12 +44,20 @@ public final class InvokeNode extends ExprNode {
          */
         CompilerAsserts.compilationConstant(argumentNodes.length);
 
-        Object[] argumentValues = Arrays.stream(argumentNodes).map((node) -> {
-            return node.executeGeneric(frame);
-        }).toArray();
+        Object[] argumentValues = Arrays.stream(argumentNodes).map((node) -> node.executeGeneric(frame)).toArray();
 
         try {
-            return library.execute(function, argumentValues);
+            if (function instanceof CrFunction) {
+                CrFunction function1 = (CrFunction) function;
+                if (function1.arity() > argumentValues.length) {
+                    return function1.partialApply(Arrays.stream(argumentValues).collect(Collectors.toList()));
+                }
+
+                argumentValues = Stream.concat(function1.getAppliedArguments().stream(), Arrays.stream(argumentValues)).toArray();
+                return library.execute(function, argumentValues);
+            } else {
+                return library.execute(function, argumentValues);
+            }
         } catch (ArityException | UnsupportedTypeException | UnsupportedMessageException e) {
             throw CrUndefinedNameException.undefinedFunction(this, function);
         }

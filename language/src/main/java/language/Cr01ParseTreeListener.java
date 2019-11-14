@@ -1,6 +1,5 @@
 package language;
 
-import com.oracle.truffle.api.RootCallTarget;
 import com.oracle.truffle.api.Truffle;
 import com.oracle.truffle.api.frame.FrameDescriptor;
 import com.oracle.truffle.api.frame.FrameSlot;
@@ -12,13 +11,14 @@ import language.nodes.stmt.SimpleDeclNodeGen;
 import language.parser.Cr01BaseListener;
 import language.parser.Cr01Lexer;
 import language.parser.Cr01Parser;
+import language.runtime.CrFunction;
 
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
 public class Cr01ParseTreeListener extends Cr01BaseListener {
-    private Map<String, RootCallTarget> functions;
+    private Map<String, CrFunction> functions;
 
     private LinkedList<ExprNode> nodes = new LinkedList<>();
 
@@ -49,7 +49,7 @@ public class Cr01ParseTreeListener extends Cr01BaseListener {
         this.functions = new HashMap<>();
     }
 
-    Map<String, RootCallTarget> getFunctions() {
+    Map<String, CrFunction> getFunctions() {
         return functions;
     }
 
@@ -69,7 +69,7 @@ public class Cr01ParseTreeListener extends Cr01BaseListener {
     @Override
     public void exitFunDecl(Cr01Parser.FunDeclContext ctx) {
         ExprNode body = new LetNode(parameterNodes.toArray(new SimpleDeclNode[0]), nodes.pop());
-        functions.put(functionName, Truffle.getRuntime().createCallTarget(new CrRootNode(language, frameDescriptor, body)));
+        functions.put(functionName, new CrFunction(functionName, parameterNodes.size(), Truffle.getRuntime().createCallTarget(new CrRootNode(language, frameDescriptor, body))));
     }
 
     @Override

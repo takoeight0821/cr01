@@ -1,7 +1,6 @@
 package language.runtime;
 
 
-import com.oracle.truffle.api.RootCallTarget;
 import language.CrLanguage;
 
 import java.util.HashMap;
@@ -21,8 +20,7 @@ public final class CrFunctionRegistry {
         return functions.get(name);
     }
 
-    public void register(String name, RootCallTarget rootCallTarget) {
-        CrFunction crFunction = new CrFunction(name, rootCallTarget);
+    public void register(String name, CrFunction crFunction) {
         functions.put(name, crFunction);
     }
 }

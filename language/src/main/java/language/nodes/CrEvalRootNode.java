@@ -9,6 +9,7 @@ import com.oracle.truffle.api.nodes.DirectCallNode;
 import com.oracle.truffle.api.nodes.RootNode;
 import language.CrLanguage;
 import language.runtime.CrContext;
+import language.runtime.CrFunction;
 import language.runtime.CrNull;
 
 import java.util.Arrays;
@@ -23,14 +24,14 @@ import java.util.Map;
  * understood by Cr01.
  */
 public final class CrEvalRootNode extends RootNode {
-    private final Map<String, RootCallTarget> functions;
+    private final Map<String, CrFunction> functions;
     @Child
     private DirectCallNode mainCallNode;
     private final TruffleLanguage.ContextReference<CrContext> reference;
     @CompilationFinal
     private boolean registered;
 
-    public CrEvalRootNode(CrLanguage language, RootCallTarget rootFunction, Map<String, RootCallTarget> functions) {
+    public CrEvalRootNode(CrLanguage language, RootCallTarget rootFunction, Map<String, CrFunction> functions) {
         super(language); // internal frame
         this.functions = functions;
         this.mainCallNode = rootFunction != null ? DirectCallNode.create(rootFunction) : null;

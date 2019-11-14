@@ -11,6 +11,7 @@ import language.nodes.CrEvalRootNode;
 import language.parser.Cr01Lexer;
 import language.parser.Cr01Parser;
 import language.runtime.CrContext;
+import language.runtime.CrFunction;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
@@ -51,7 +52,7 @@ public class CrLanguage extends TruffleLanguage<CrContext> {
     @Override
     protected CallTarget parse(ParsingRequest request) {
         var functions = parseSource(request.getSource());
-        RootCallTarget main = functions.get("main");
+        RootCallTarget main = functions.get("main").getCallTarget();
         RootNode evalMain;
         if (main != null) {
             evalMain = new CrEvalRootNode(this, main, functions);
@@ -61,7 +62,7 @@ public class CrLanguage extends TruffleLanguage<CrContext> {
         return Truffle.getRuntime().createCallTarget(evalMain);
     }
 
-    private Map<String, RootCallTarget> parseSource(Source source) {
+    private Map<String, CrFunction> parseSource(Source source) {
         var charStream = CharStreams.fromString(source.getCharacters().toString());
         var lexer = new Cr01Lexer(charStream);
         var parser = new Cr01Parser(new CommonTokenStream(lexer));
