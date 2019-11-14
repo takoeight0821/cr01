@@ -10,7 +10,7 @@ import language.nodes.expr.ExprNode;
 
 @NodeField(name = "slot", type = FrameSlot.class)
 @NodeChild(value = "valueNode", type = ExprNode.class)
-public abstract class SimpleDecl extends StmtNode {
+public abstract class SimpleDeclNode extends StmtNode {
     protected abstract FrameSlot getSlot();
 
     @Specialization(guards = "isLongOrIllegal(frame)")

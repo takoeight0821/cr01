@@ -7,7 +7,7 @@ import com.oracle.truffle.api.frame.FrameSlot;
 import com.oracle.truffle.api.frame.FrameSlotKind;
 import language.nodes.CrRootNode;
 import language.nodes.expr.*;
-import language.nodes.stmt.SimpleDecl;
+import language.nodes.stmt.SimpleDeclNode;
 import language.nodes.stmt.SimpleDeclNodeGen;
 import language.parser.Cr01BaseListener;
 import language.parser.Cr01Lexer;
@@ -22,7 +22,6 @@ public class Cr01ParseTreeListener extends Cr01BaseListener {
     private LinkedList<ExprNode> nodes = new LinkedList<>();
     private FrameDescriptor frameDescriptor;
     private String functionName;
-    private LinkedList<SimpleDecl> parameterDecls;
     private CrLanguage language;
 
     static class LexicalScope {
@@ -53,12 +52,9 @@ public class Cr01ParseTreeListener extends Cr01BaseListener {
     public void enterFunDecl(Cr01Parser.FunDeclContext ctx) {
         functionName = ctx.name.getText();
         frameDescriptor = new FrameDescriptor();
-        parameterDecls = new LinkedList<>();
         lexicalScope = new LexicalScope(null);
         for (int i = 0; i < ctx.params.size(); i++) {
             var frameSlot = frameDescriptor.addFrameSlot(ctx.params.get(i).getText());
-            parameterDecls.push(SimpleDeclNodeGen.create(new ReadArgumentNode(i),
-                    frameSlot));
             lexicalScope.locals.put(ctx.params.get(i).getText(), frameSlot);
         }
     }
@@ -104,7 +100,7 @@ public class Cr01ParseTreeListener extends Cr01BaseListener {
         nodes.push(VariableNodeGen.create(frameSlot));
     }
 
-    private SimpleDecl declNode;
+    private SimpleDeclNode declNode;
 
     @Override
     public void exitSimpleDecl(Cr01Parser.SimpleDeclContext ctx) {
@@ -123,7 +119,7 @@ public class Cr01ParseTreeListener extends Cr01BaseListener {
     @Override
     public void exitLetExpr(Cr01Parser.LetExprContext ctx) {
         ExprNode bodyNode = nodes.pop();
-        SimpleDecl[] declNodes = { declNode };
+        SimpleDeclNode[] declNodes = { declNode };
         nodes.push(new LetNode(declNodes, bodyNode));
         lexicalScope = lexicalScope.outer;
     }
