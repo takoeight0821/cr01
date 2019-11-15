@@ -8,10 +8,12 @@ import com.oracle.truffle.api.interop.UnsupportedMessageException;
 import com.oracle.truffle.api.interop.UnsupportedTypeException;
 import com.oracle.truffle.api.nodes.ExplodeLoop;
 import com.oracle.truffle.api.nodes.NodeInfo;
+import com.oracle.truffle.api.profiles.BranchProfile;
+import language.runtime.CrException;
 import language.runtime.CrFunction;
-import language.runtime.CrUndefinedNameException;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -23,6 +25,8 @@ public final class InvokeNode extends ExprNode {
     private final ExprNode[] argumentNodes;
     @Child
     private InteropLibrary library;
+
+    private final BranchProfile partialApplication = BranchProfile.create();
 
     public InvokeNode(ExprNode functionNode, ExprNode[] argumentNodes) {
         this.functionNode = functionNode;
@@ -44,22 +48,25 @@ public final class InvokeNode extends ExprNode {
          */
         CompilerAsserts.compilationConstant(argumentNodes.length);
 
-        Object[] argumentValues = Arrays.stream(argumentNodes).map((node) -> node.executeGeneric(frame)).toArray();
+        List<Object> argumentValues = Arrays.stream(argumentNodes).map((node) -> node.executeGeneric(frame)).collect(Collectors.toList());
+
+        if (function instanceof CrFunction) {
+            CrFunction function1 = (CrFunction) function;
+            if (function1.arity() > argumentValues.size()) {
+                // partial application
+                partialApplication.enter();
+                return function1.partialApply(argumentValues);
+            }
+
+            argumentValues = Stream.concat(function1.getAppliedArguments().stream(), argumentValues.stream()).collect(Collectors.toList());
+        }
 
         try {
-            if (function instanceof CrFunction) {
-                CrFunction function1 = (CrFunction) function;
-                if (function1.arity() > argumentValues.length) {
-                    return function1.partialApply(Arrays.stream(argumentValues).collect(Collectors.toList()));
-                }
-
-                argumentValues = Stream.concat(function1.getAppliedArguments().stream(), Arrays.stream(argumentValues)).toArray();
-                return library.execute(function, argumentValues);
-            } else {
-                return library.execute(function, argumentValues);
-            }
+            return library.execute(function, argumentValues.toArray());
         } catch (ArityException | UnsupportedTypeException | UnsupportedMessageException e) {
-            throw CrUndefinedNameException.undefinedFunction(this, function);
+            var invoked = argumentValues.subList(argumentValues.size() - argumentNodes.length, argumentValues.size());
+            invoked.add(0, function);
+            throw CrException.typeError(this, invoked.toArray());
         }
     }
 }

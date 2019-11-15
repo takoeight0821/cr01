@@ -1,8 +1,10 @@
 package language.runtime;
 
+import com.oracle.truffle.api.CompilerDirectives;
 import com.oracle.truffle.api.RootCallTarget;
 import com.oracle.truffle.api.dsl.Cached;
 import com.oracle.truffle.api.dsl.Specialization;
+import com.oracle.truffle.api.interop.ArityException;
 import com.oracle.truffle.api.interop.InteropLibrary;
 import com.oracle.truffle.api.interop.TruffleObject;
 import com.oracle.truffle.api.library.ExportLibrary;
@@ -58,7 +60,7 @@ public final class CrFunction implements TruffleObject, Cloneable {
 
     @Override
     public String toString() {
-        return name + " " + appliedArguments.toString();
+        return name + appliedArguments + ":" + arity();
     }
 
     @SuppressWarnings("static-method")
@@ -79,13 +81,21 @@ public final class CrFunction implements TruffleObject, Cloneable {
         @SuppressWarnings("unused")
         protected static Object doDirect(CrFunction function, Object[] arguments,
                                          @Cached("function.getCallTarget()") RootCallTarget cachedTarget,
-                                         @Cached("create(cachedTarget)") DirectCallNode callNode) {
+                                         @Cached("create(cachedTarget)") DirectCallNode callNode) throws ArityException {
+            if (function.parameterCount != arguments.length) {
+                CompilerDirectives.transferToInterpreter();
+                throw ArityException.create(function.arity(), arguments.length - function.appliedArguments.size());
+            }
             return callNode.call(arguments);
         }
 
         @Specialization(replaces = "doDirect")
         protected static Object doIndirect(CrFunction function, Object[] arguments,
-                                           @Cached IndirectCallNode callNode) {
+                                           @Cached IndirectCallNode callNode) throws ArityException {
+            if (function.parameterCount != arguments.length) {
+                CompilerDirectives.transferToInterpreter();
+                throw ArityException.create(function.arity(), arguments.length - function.appliedArguments.size());
+            }
             return callNode.call(function.getCallTarget(), arguments);
         }
     }
