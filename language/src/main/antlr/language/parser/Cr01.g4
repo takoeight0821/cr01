@@ -28,5 +28,5 @@ OP_DIV: '/';
 
 ID: [a-z_][a-zA-Z0-9_]*;
 NUM: [0-9]+;
-WS: [ \t]+ -> skip;
+WS: [ \t\r\n]+ -> skip;
 NEWLINE: '\r'? '\n';
