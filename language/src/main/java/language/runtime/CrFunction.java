@@ -35,23 +35,26 @@ public final class CrFunction implements TruffleObject, Cloneable {
 
     private final int parameterCount;
 
+    private final DirectCallNode callNode;
+
     private List<Object> appliedArguments = new LinkedList<>();
 
     public CrFunction(String name, int parameterCount, RootCallTarget rootCallTarget) {
         this.name = name;
         this.parameterCount = parameterCount;
         this.callTarget = rootCallTarget;
+        this.callNode = DirectCallNode.create(this.callTarget);
     }
 
     public List<Object> getAppliedArguments() {
         return this.appliedArguments;
     }
 
-    public int arity() {
+    private int arity() {
         return parameterCount - appliedArguments.size();
     }
 
-    public CrFunction partialApply(List<Object> args) {
+    private CrFunction partialApply(List<Object> args) {
         CrFunction newFunc = new CrFunction(this.name, this.parameterCount, this.callTarget);
         newFunc.appliedArguments.addAll(args);
         return newFunc;
@@ -86,8 +89,7 @@ public final class CrFunction implements TruffleObject, Cloneable {
             return this.partialApply(Arrays.stream(arguments).collect(Collectors.toList()));
         } else {
             Object[] actual_arguments = Stream.concat(this.appliedArguments.stream(), Arrays.stream(arguments)).toArray();
-            DirectCallNode callNode = DirectCallNode.create(this.getCallTarget());
-            return callNode.call(actual_arguments);
+            return this.callNode.call(actual_arguments);
         }
     }
 }
