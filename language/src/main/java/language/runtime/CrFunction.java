@@ -13,8 +13,11 @@ import com.oracle.truffle.api.nodes.DirectCallNode;
 import com.oracle.truffle.api.nodes.IndirectCallNode;
 import com.oracle.truffle.api.source.SourceSection;
 
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @ExportLibrary(InteropLibrary.class)
 public final class CrFunction implements TruffleObject, Cloneable {
@@ -75,28 +78,16 @@ public final class CrFunction implements TruffleObject, Cloneable {
     }
 
     @ExportMessage
-    abstract static class Execute {
-        @Specialization(limit = "INLINE_CACHE_SIZE",
-                guards = "function.getCallTarget() == cachedTarget")
-        @SuppressWarnings("unused")
-        protected static Object doDirect(CrFunction function, Object[] arguments,
-                                         @Cached("function.getCallTarget()") RootCallTarget cachedTarget,
-                                         @Cached("create(cachedTarget)") DirectCallNode callNode) throws ArityException {
-            if (function.parameterCount != arguments.length) {
-                CompilerDirectives.transferToInterpreter();
-                throw ArityException.create(function.arity(), arguments.length - function.appliedArguments.size());
-            }
-            return callNode.call(arguments);
-        }
-
-        @Specialization(replaces = "doDirect")
-        protected static Object doIndirect(CrFunction function, Object[] arguments,
-                                           @Cached IndirectCallNode callNode) throws ArityException {
-            if (function.parameterCount != arguments.length) {
-                CompilerDirectives.transferToInterpreter();
-                throw ArityException.create(function.arity(), arguments.length - function.appliedArguments.size());
-            }
-            return callNode.call(function.getCallTarget(), arguments);
+    Object execute(Object[] arguments) throws ArityException {
+        if (this.arity() < arguments.length) {
+            CompilerDirectives.transferToInterpreter();
+            throw ArityException.create(this.arity(), arguments.length);
+        } else if (this.arity() > arguments.length) {
+            return this.partialApply(Arrays.stream(arguments).collect(Collectors.toList()));
+        } else {
+            Object[] actual_arguments = Stream.concat(this.appliedArguments.stream(), Arrays.stream(arguments)).toArray();
+            DirectCallNode callNode = DirectCallNode.create(this.getCallTarget());
+            return callNode.call(actual_arguments);
         }
     }
 }

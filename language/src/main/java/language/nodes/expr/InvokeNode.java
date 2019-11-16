@@ -48,23 +48,12 @@ public final class InvokeNode extends ExprNode {
          */
         CompilerAsserts.compilationConstant(argumentNodes.length);
 
-        List<Object> argumentValues = Arrays.stream(argumentNodes).map((node) -> node.executeGeneric(frame)).collect(Collectors.toList());
-
-        if (function instanceof CrFunction) {
-            CrFunction function1 = (CrFunction) function;
-            if (function1.arity() > argumentValues.size()) {
-                // partial application
-                partialApplication.enter();
-                return function1.partialApply(argumentValues);
-            }
-
-            argumentValues = Stream.concat(function1.getAppliedArguments().stream(), argumentValues.stream()).collect(Collectors.toList());
-        }
+        Object[] argumentValues = Arrays.stream(argumentNodes).map((node) -> node.executeGeneric(frame)).toArray();
 
         try {
-            return library.execute(function, argumentValues.toArray());
+            return library.execute(function, argumentValues);
         } catch (ArityException | UnsupportedTypeException | UnsupportedMessageException e) {
-            var invoked = argumentValues.subList(argumentValues.size() - argumentNodes.length, argumentValues.size());
+            var invoked = Arrays.stream(argumentValues).collect(Collectors.toList());
             invoked.add(0, function);
             throw CrException.typeError(this, invoked.toArray());
         }
