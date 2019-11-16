@@ -52,10 +52,10 @@ public class CrLanguage extends TruffleLanguage<CrContext> {
     @Override
     protected CallTarget parse(ParsingRequest request) {
         var functions = parseSource(request.getSource());
-        RootCallTarget main = functions.get("main").getCallTarget();
+        CrFunction main = functions.get("main");
         RootNode evalMain;
         if (main != null) {
-            evalMain = new CrEvalRootNode(this, main, functions);
+            evalMain = new CrEvalRootNode(this, main.getCallTarget(), functions);
         } else {
             evalMain = new CrEvalRootNode(this, null, functions);
         }
