@@ -4,7 +4,7 @@ grammar Cr01;
 package language.parser;
 }
 
-prog : (funDecl ';')+ (EOF | NEWLINE) ;
+prog : (funDecl ';')+ EOF ;
 
 funDecl : name=ID (params+=ID)+ '=' expr ;
 
