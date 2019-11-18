@@ -16,6 +16,14 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+/*
+クロージャにするための改造方法メモ
+MaterializedFrameをCrFunctionのフィールドに追加する。これはキャプチャした環境を表す
+CrFunctionの持つルートノードをexecuteするとき、frameにMaterializedFrameの中身をコピーする
+FunctionExprNodeのexecuteでMaterializedFrameにframeの中身をコピーする
+これでうまくいく？
+コピーのためにFrameDescriptorを持っておく必要がある
+ */
 @ExportLibrary(InteropLibrary.class)
 public final class CrFunction implements TruffleObject, Cloneable {
     static final int INLINE_CACHE_SIZE = 2;
