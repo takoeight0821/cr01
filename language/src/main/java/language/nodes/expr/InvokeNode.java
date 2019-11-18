@@ -10,12 +10,9 @@ import com.oracle.truffle.api.nodes.ExplodeLoop;
 import com.oracle.truffle.api.nodes.NodeInfo;
 import com.oracle.truffle.api.profiles.BranchProfile;
 import language.runtime.CrException;
-import language.runtime.CrFunction;
 
 import java.util.Arrays;
-import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @NodeInfo(shortName = "invoke")
 public final class InvokeNode extends ExprNode {

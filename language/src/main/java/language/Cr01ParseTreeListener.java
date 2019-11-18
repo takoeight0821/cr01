@@ -1,17 +1,10 @@
 package language;
 
-import com.oracle.truffle.api.Truffle;
-import com.oracle.truffle.api.frame.FrameDescriptor;
-import com.oracle.truffle.api.frame.FrameSlot;
-import com.oracle.truffle.api.frame.FrameSlotKind;
-import language.nodes.CrRootNode;
 import language.nodes.builder.CrFunctionBuilder;
 import language.nodes.builder.CrNodeFactory;
-import language.nodes.expr.*;
+import language.nodes.expr.ExprNode;
 import language.nodes.stmt.SimpleDeclNode;
-import language.nodes.stmt.SimpleDeclNodeGen;
 import language.parser.Cr01BaseListener;
-import language.parser.Cr01Lexer;
 import language.parser.Cr01Parser;
 import language.runtime.CrFunction;
 
