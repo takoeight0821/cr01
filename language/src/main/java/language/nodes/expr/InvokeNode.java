@@ -12,6 +12,7 @@ import com.oracle.truffle.api.profiles.BranchProfile;
 import language.runtime.CrException;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @NodeInfo(shortName = "invoke")
@@ -45,12 +46,18 @@ public final class InvokeNode extends ExprNode {
          */
         CompilerAsserts.compilationConstant(argumentNodes.length);
 
-        Object[] argumentValues = Arrays.stream(argumentNodes).map((node) -> node.executeGeneric(frame)).toArray();
+        List<Object> argumentValues = Arrays.stream(argumentNodes).map((node) -> node.executeGeneric(frame)).collect(Collectors.toList());
 
+        return invoke(function, argumentValues);
+    }
+
+    private Object invoke(Object function, List<Object> argumentValues) {
         try {
-            return library.execute(function, argumentValues);
-        } catch (ArityException | UnsupportedTypeException | UnsupportedMessageException e) {
-            var invoked = Arrays.stream(argumentValues).collect(Collectors.toList());
+            return library.execute(function, argumentValues.toArray());
+        } catch (ArityException e) {
+            throw CrException.typeError(this, argumentValues);
+        } catch (UnsupportedTypeException | UnsupportedMessageException e) {
+            var invoked = argumentValues;
             invoked.add(0, function);
             throw CrException.typeError(this, invoked.toArray());
         }
