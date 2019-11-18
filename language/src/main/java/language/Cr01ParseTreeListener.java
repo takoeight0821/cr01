@@ -3,6 +3,7 @@ package language;
 import language.nodes.builder.CrFunctionBuilder;
 import language.nodes.builder.CrNodeFactory;
 import language.nodes.expr.ExprNode;
+import language.nodes.expr.FunctionExprNode;
 import language.parser.Cr01BaseListener;
 import language.parser.Cr01Parser;
 import language.runtime.CrFunction;
@@ -10,6 +11,7 @@ import language.runtime.CrFunction;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.UUID;
 
 public class Cr01ParseTreeListener extends Cr01BaseListener {
     private Map<String, CrFunction> functions;
@@ -30,9 +32,7 @@ public class Cr01ParseTreeListener extends Cr01BaseListener {
     @Override
     public void enterFunDecl(Cr01Parser.FunDeclContext ctx) {
         CrFunctionBuilder crFunctionBuilder = factory.startFunction();
-
         crFunctionBuilder.setFunctionName(ctx.name.getText());
-
         ctx.params.forEach((param) -> crFunctionBuilder.addParameter(param.getText()));
     }
 
@@ -90,5 +90,18 @@ public class Cr01ParseTreeListener extends Cr01BaseListener {
     public void exitLetExpr(Cr01Parser.LetExprContext ctx) {
         ExprNode bodyNode = nodes.pop();
         nodes.push(factory.endLet(bodyNode));
+    }
+
+    @Override
+    public void enterFnExpr(Cr01Parser.FnExprContext ctx) {
+        CrFunctionBuilder builder = factory.startFunction();
+        builder.setFunctionName("lambda" + UUID.randomUUID());
+        ctx.params.forEach((param) -> builder.addParameter(param.getText()));
+    }
+
+    @Override
+    public void exitFnExpr(Cr01Parser.FnExprContext ctx) {
+        CrFunction function = factory.endFunction(nodes.pop());
+        nodes.push(new FunctionExprNode(function));
     }
 }

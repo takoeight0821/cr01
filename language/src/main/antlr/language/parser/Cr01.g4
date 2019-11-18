@@ -16,7 +16,7 @@ simpleExpr : '(' expr ')' #parensExpr
 expr : func=simpleExpr (args+=simpleExpr)* #applyExpr
      | left=expr op=('*' | '/') right=expr #infixExpr
      | left=expr op=('+' | '-') right=expr #infixExpr
-     | 'fn' (params+=ID) body=expr #fnExpr
+     | 'fn' (params+=ID) '->' body=expr #fnExpr
      | 'let' var_decl 'in' body=expr #letExpr
      ;
 
