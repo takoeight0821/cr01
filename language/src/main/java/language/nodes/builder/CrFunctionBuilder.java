@@ -16,14 +16,14 @@ import java.util.LinkedList;
 
 public final class CrFunctionBuilder {
     private String functionName;
-    private FrameDescriptor frameDescriptor;
+    private final FrameDescriptor frameDescriptor;
     private LinkedList<SimpleDeclNode> parameterNodes = new LinkedList<>();
-    private CrNodeFactory.LexicalScope lexicalScope;
+    private LexicalScope lexicalScope;
 
-    private CrLanguage language;
+    private final CrLanguage language;
     private RootCallTarget rootNode;
 
-    CrFunctionBuilder(FrameDescriptor frameDescriptor, CrNodeFactory.LexicalScope lexicalScope, CrLanguage language) {
+    CrFunctionBuilder(FrameDescriptor frameDescriptor, LexicalScope lexicalScope, CrLanguage language) {
         this.frameDescriptor = frameDescriptor;
         this.lexicalScope = lexicalScope;
         this.language = language;
@@ -35,7 +35,7 @@ public final class CrFunctionBuilder {
     }
 
     public CrFunctionBuilder addParameter(String name) {
-        var frameSlot = frameDescriptor.addFrameSlot(name);
+        var frameSlot = frameDescriptor.addFrameSlot(new Object());
         lexicalScope.locals.put(name, frameSlot);
         parameterNodes.push(SimpleDeclNodeGen.create(new ReadArgumentNode(parameterNodes.size()), frameSlot));
         return this;

@@ -2,21 +2,16 @@ package language.nodes.builder;
 
 import com.oracle.truffle.api.frame.FrameDescriptor;
 import com.oracle.truffle.api.frame.FrameSlot;
-import com.oracle.truffle.api.frame.FrameSlotKind;
 import language.CrLanguage;
 import language.nodes.expr.*;
-import language.nodes.stmt.SimpleDeclNode;
-import language.nodes.stmt.SimpleDeclNodeGen;
 import language.parser.Cr01Lexer;
 import language.runtime.CrFunction;
 
-import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.Map;
 
 public final class CrNodeFactory {
-    private CrLanguage language;
-    private FrameDescriptor frameDescriptor;
+    private final CrLanguage language;
+    private final FrameDescriptor frameDescriptor = new FrameDescriptor();
     private LexicalScope lexicalScope;
 
     private LinkedList<CrFunctionBuilder> functionBuilders = new LinkedList<>();
@@ -26,12 +21,11 @@ public final class CrNodeFactory {
         this.language = language;
     }
 
-
     /*
     CrFunctionBuilder
      */
     public CrFunctionBuilder startToplevelFunction() {
-        frameDescriptor = new FrameDescriptor();
+        // frameDescriptor = new FrameDescriptor();
         return startFunction();
     }
 
@@ -51,10 +45,9 @@ public final class CrNodeFactory {
         return functionBuilders.peekFirst();
     }
 
-    public LetExprBuilder startLet() {
+    public void startLet() {
         LetExprBuilder letExprBuilder = new LetExprBuilder(lexicalScope, frameDescriptor);
         letExprBuilders.addFirst(letExprBuilder);
-        return letExprBuilder;
     }
 
     public LetNode endLet(ExprNode bodyNode) {
@@ -106,25 +99,5 @@ public final class CrNodeFactory {
 
     public LongNode createNumber(long value) {
         return new LongNode(value);
-    }
-
-
-    public SimpleDeclNode createSimpleDecl(String name, ExprNode value) {
-        FrameSlot frameSlot = frameDescriptor.addFrameSlot(name, FrameSlotKind.Illegal);
-        lexicalScope.locals.put(name, frameSlot);
-        return SimpleDeclNodeGen.create(value, frameSlot);
-    }
-
-    static class LexicalScope {
-        final LexicalScope outer;
-        final Map<String, FrameSlot> locals;
-
-        LexicalScope(LexicalScope outer) {
-            this.outer = outer;
-            this.locals = new HashMap<>();
-            if (outer != null) {
-                locals.putAll(outer.locals);
-            }
-        }
     }
 }
