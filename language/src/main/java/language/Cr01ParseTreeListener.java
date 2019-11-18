@@ -3,7 +3,6 @@ package language;
 import language.nodes.builder.CrFunctionBuilder;
 import language.nodes.builder.CrNodeFactory;
 import language.nodes.expr.ExprNode;
-import language.nodes.stmt.SimpleDeclNode;
 import language.parser.Cr01BaseListener;
 import language.parser.Cr01Parser;
 import language.runtime.CrFunction;
@@ -17,14 +16,11 @@ public class Cr01ParseTreeListener extends Cr01BaseListener {
 
     private LinkedList<ExprNode> nodes = new LinkedList<>();
 
-    private CrLanguage language;
-
     private CrNodeFactory factory;
 
-    public Cr01ParseTreeListener(CrLanguage language) {
-        this.language = language;
+    Cr01ParseTreeListener(CrLanguage language) {
         this.functions = new HashMap<>();
-        this.factory = new CrNodeFactory(this.language);
+        this.factory = new CrNodeFactory(language);
     }
 
     Map<String, CrFunction> getFunctions() {
@@ -33,11 +29,11 @@ public class Cr01ParseTreeListener extends Cr01BaseListener {
 
     @Override
     public void enterFunDecl(Cr01Parser.FunDeclContext ctx) {
-        CrFunctionBuilder crFunctionBuilder = factory.startToplevelFunction();
+        CrFunctionBuilder crFunctionBuilder = factory.startFunction();
 
         crFunctionBuilder.setFunctionName(ctx.name.getText());
 
-        ctx.params.stream().forEach((param) -> crFunctionBuilder.addParameter(param.getText()));
+        ctx.params.forEach((param) -> crFunctionBuilder.addParameter(param.getText()));
     }
 
     @Override
@@ -77,8 +73,6 @@ public class Cr01ParseTreeListener extends Cr01BaseListener {
         String name = ctx.name.getText();
         nodes.push(factory.createVar(name));
     }
-
-    private SimpleDeclNode declNode;
 
     @Override
     public void exitSimpleDecl(Cr01Parser.SimpleDeclContext ctx) {

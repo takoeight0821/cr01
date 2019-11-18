@@ -24,11 +24,6 @@ public final class CrNodeFactory {
     /*
     CrFunctionBuilder
      */
-    public CrFunctionBuilder startToplevelFunction() {
-        // frameDescriptor = new FrameDescriptor();
-        return startFunction();
-    }
-
     public CrFunctionBuilder startFunction() {
         lexicalScope = new LexicalScope(lexicalScope);
         CrFunctionBuilder functionBuilder = new CrFunctionBuilder(frameDescriptor, lexicalScope, language);

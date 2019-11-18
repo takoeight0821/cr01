@@ -29,16 +29,14 @@ public final class CrFunctionBuilder {
         this.language = language;
     }
 
-    public CrFunctionBuilder setFunctionName(String functionName) {
+    public void setFunctionName(String functionName) {
         this.functionName = functionName;
-        return this;
     }
 
-    public CrFunctionBuilder addParameter(String name) {
+    public void addParameter(String name) {
         var frameSlot = frameDescriptor.addFrameSlot(new Object());
         lexicalScope.locals.put(name, frameSlot);
         parameterNodes.push(SimpleDeclNodeGen.create(new ReadArgumentNode(parameterNodes.size()), frameSlot));
-        return this;
     }
 
     private void addBodyNode(ExprNode bodyNode) {
