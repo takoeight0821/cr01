@@ -51,13 +51,18 @@ public final class InvokeNode extends ExprNode {
         return invoke(function, argumentValues);
     }
 
-    private Object invoke(Object function, List<Object> argumentValues) {
+    private Object invoke(Object function, List<Object> arguments) {
         try {
-            return library.execute(function, argumentValues.toArray());
+            return library.execute(function, arguments.toArray());
         } catch (ArityException e) {
-            throw CrException.typeError(this, argumentValues);
+            assert (e.getExpectedArity() < e.getActualArity());
+
+            var expectedArguments = arguments.subList(0, e.getExpectedArity());
+            var restArguments = arguments.subList(e.getExpectedArity(), arguments.size());
+            var function1 = invoke(function, expectedArguments);
+            return invoke(function1, restArguments);
         } catch (UnsupportedTypeException | UnsupportedMessageException e) {
-            var invoked = argumentValues;
+            var invoked = arguments;
             invoked.add(0, function);
             throw CrException.typeError(this, invoked.toArray());
         }
