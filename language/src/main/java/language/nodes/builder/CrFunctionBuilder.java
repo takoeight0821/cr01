@@ -14,7 +14,7 @@ import language.runtime.CrFunction;
 
 import java.util.LinkedList;
 
-final class CrFunctionBuilder {
+public final class CrFunctionBuilder {
     private String functionName;
     private FrameDescriptor frameDescriptor;
     private LinkedList<SimpleDeclNode> parameterNodes = new LinkedList<>();

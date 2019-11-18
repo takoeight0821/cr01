@@ -12,14 +12,15 @@ import java.util.LinkedList;
 
 public class LetExprBuilder {
     private CrNodeFactory.LexicalScope lexicalScope;
-    private LinkedList<SimpleDeclNode> simpleDeclNodes;
+    private LinkedList<SimpleDeclNode> simpleDeclNodes = new LinkedList<>();
     private FrameDescriptor frameDescriptor;
 
-    LetExprBuilder(CrNodeFactory.LexicalScope lexicalScope) {
+    LetExprBuilder(CrNodeFactory.LexicalScope lexicalScope, FrameDescriptor frameDescriptor) {
         this.lexicalScope = lexicalScope;
+        this.frameDescriptor = frameDescriptor;
     }
 
-    LetExprBuilder addSimpleDecl(String name, ExprNode value) {
+    public LetExprBuilder addSimpleDecl(String name, ExprNode value) {
         FrameSlot frameSlot = frameDescriptor.addFrameSlot(name, FrameSlotKind.Illegal);
         lexicalScope.locals.put(name, frameSlot);
         simpleDeclNodes.push(SimpleDeclNodeGen.create(value, frameSlot));

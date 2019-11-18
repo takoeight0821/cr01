@@ -4,12 +4,10 @@ import com.oracle.truffle.api.frame.FrameDescriptor;
 import com.oracle.truffle.api.frame.FrameSlot;
 import com.oracle.truffle.api.frame.FrameSlotKind;
 import language.CrLanguage;
-import language.nodes.builder.CrFunctionBuilder;
 import language.nodes.expr.*;
 import language.nodes.stmt.SimpleDeclNode;
 import language.nodes.stmt.SimpleDeclNodeGen;
 import language.parser.Cr01Lexer;
-import language.parser.Cr01Parser;
 import language.runtime.CrFunction;
 
 import java.util.HashMap;
@@ -54,7 +52,7 @@ public final class CrNodeFactory {
     }
 
     public LetExprBuilder startLet() {
-        LetExprBuilder letExprBuilder = new LetExprBuilder(lexicalScope);
+        LetExprBuilder letExprBuilder = new LetExprBuilder(lexicalScope, frameDescriptor);
         letExprBuilders.addFirst(letExprBuilder);
         return letExprBuilder;
     }

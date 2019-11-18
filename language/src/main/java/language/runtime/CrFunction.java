@@ -28,6 +28,10 @@ public final class CrFunction implements TruffleObject, Cloneable {
      */
     private final String name;
 
+    public String getName() {
+        return this.name;
+    }
+
     /**
      * The implementation of this function.
      */
@@ -50,7 +54,7 @@ public final class CrFunction implements TruffleObject, Cloneable {
         return this.appliedArguments;
     }
 
-    private int arity() {
+    public int arity() {
         return parameterCount - appliedArguments.size();
     }
 
