@@ -13,6 +13,7 @@ import language.nodes.stmt.SimpleDeclNodeGen;
 import language.runtime.CrFunction;
 
 import java.util.LinkedList;
+import java.util.UUID;
 
 public final class CrFunctionBuilder {
     private String functionName;
@@ -34,7 +35,7 @@ public final class CrFunctionBuilder {
     }
 
     public void addParameter(String name) {
-        var frameSlot = frameDescriptor.addFrameSlot(new Object());
+        var frameSlot = frameDescriptor.addFrameSlot(name + "#" + UUID.randomUUID());
         lexicalScope.locals.put(name, frameSlot);
         parameterNodes.push(SimpleDeclNodeGen.create(new ReadArgumentNode(parameterNodes.size()), frameSlot));
     }

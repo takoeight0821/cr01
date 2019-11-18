@@ -5,6 +5,7 @@ import com.oracle.truffle.api.dsl.NodeField;
 import com.oracle.truffle.api.dsl.Specialization;
 import com.oracle.truffle.api.frame.FrameSlot;
 import com.oracle.truffle.api.frame.FrameSlotKind;
+import com.oracle.truffle.api.frame.MaterializedFrame;
 import com.oracle.truffle.api.frame.VirtualFrame;
 import language.nodes.expr.ExprNode;
 
@@ -15,14 +16,16 @@ public abstract class SimpleDeclNode extends StmtNode {
 
     @Specialization(guards = "isLongOrIllegal(frame)")
     void declLong(VirtualFrame frame, long value) {
-        frame.getFrameDescriptor().setFrameSlotKind(getSlot(), FrameSlotKind.Long);
-        frame.setLong(getSlot(), value);
+        MaterializedFrame mframe = frame.materialize();
+        mframe.getFrameDescriptor().setFrameSlotKind(getSlot(), FrameSlotKind.Long);
+        mframe.setLong(getSlot(), value);
     }
 
     @Specialization(replaces = "declLong")
     void decl(VirtualFrame frame, Object value) {
-        frame.getFrameDescriptor().setFrameSlotKind(getSlot(), FrameSlotKind.Object);
-        frame.setObject(getSlot(), value);
+        MaterializedFrame mframe = frame.materialize();
+        mframe.getFrameDescriptor().setFrameSlotKind(getSlot(), FrameSlotKind.Object);
+        mframe.setObject(getSlot(), value);
     }
 
     boolean isLongOrIllegal(VirtualFrame frame) {

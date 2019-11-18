@@ -9,6 +9,7 @@ import language.nodes.stmt.SimpleDeclNode;
 import language.nodes.stmt.SimpleDeclNodeGen;
 
 import java.util.LinkedList;
+import java.util.UUID;
 
 public class LetExprBuilder {
     private LexicalScope lexicalScope;
@@ -21,7 +22,7 @@ public class LetExprBuilder {
     }
 
     public void addSimpleDecl(String name, ExprNode value) {
-        FrameSlot frameSlot = frameDescriptor.addFrameSlot(new Object(), FrameSlotKind.Illegal);
+        FrameSlot frameSlot = frameDescriptor.addFrameSlot(name + "#" + UUID.randomUUID(), FrameSlotKind.Illegal);
         lexicalScope.locals.put(name, frameSlot);
         simpleDeclNodes.push(SimpleDeclNodeGen.create(value, frameSlot));
     }

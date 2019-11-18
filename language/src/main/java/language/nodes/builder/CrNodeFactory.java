@@ -33,6 +33,7 @@ public final class CrNodeFactory {
 
     public CrFunction endFunction(ExprNode bodyNode) {
         CrFunctionBuilder functionBuilder = functionBuilders.removeFirst();
+        lexicalScope = lexicalScope.outer;
         return functionBuilder.buildCrFunction(bodyNode);
     }
 
@@ -41,6 +42,7 @@ public final class CrNodeFactory {
     }
 
     public void startLet() {
+        lexicalScope = new LexicalScope(lexicalScope);
         LetExprBuilder letExprBuilder = new LetExprBuilder(lexicalScope, frameDescriptor);
         letExprBuilders.addFirst(letExprBuilder);
     }
