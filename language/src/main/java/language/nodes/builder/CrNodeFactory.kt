@@ -21,7 +21,7 @@ class CrNodeFactory(private val language: CrLanguage) {
     }
 
     fun startFunction(): CrFunctionBuilder {
-        lexicalScope = language.nodes.builder.LexicalScope(lexicalScope)
+        lexicalScope = LexicalScope(lexicalScope)
         val functionBuilder = CrFunctionBuilder(frameDescriptor!!, lexicalScope!!, language)
         functionBuilders.addFirst(functionBuilder)
         return functionBuilder
@@ -42,7 +42,7 @@ class CrNodeFactory(private val language: CrLanguage) {
         get() = functionBuilders.peekFirst()
 
     fun startLet() {
-        lexicalScope = language.nodes.builder.LexicalScope(lexicalScope)
+        lexicalScope = LexicalScope(lexicalScope)
         val letExprBuilder = LetExprBuilder(lexicalScope!!, frameDescriptor!!)
         letExprBuilders.addFirst(letExprBuilder)
     }
@@ -71,7 +71,7 @@ class CrNodeFactory(private val language: CrLanguage) {
     }
 
     fun createApply(funcNode: ExprNode?, argNodes: Array<ExprNode?>?): InvokeNode {
-        return language.nodes.expr.InvokeNode(funcNode, argNodes)
+        return InvokeNode(funcNode, argNodes)
     }
 
     fun createInfix(opType: Int, left: ExprNode?, right: ExprNode?): BinaryNode? {
