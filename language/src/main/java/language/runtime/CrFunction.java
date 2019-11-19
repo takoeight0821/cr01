@@ -2,6 +2,8 @@ package language.runtime;
 
 import com.oracle.truffle.api.CompilerDirectives;
 import com.oracle.truffle.api.RootCallTarget;
+import com.oracle.truffle.api.Truffle;
+import com.oracle.truffle.api.frame.FrameDescriptor;
 import com.oracle.truffle.api.interop.ArityException;
 import com.oracle.truffle.api.interop.InteropLibrary;
 import com.oracle.truffle.api.interop.TruffleObject;
@@ -9,6 +11,9 @@ import com.oracle.truffle.api.library.ExportLibrary;
 import com.oracle.truffle.api.library.ExportMessage;
 import com.oracle.truffle.api.nodes.DirectCallNode;
 import com.oracle.truffle.api.source.SourceSection;
+import language.CrLanguage;
+import language.nodes.CrRootNode;
+import language.nodes.expr.ExprNode;
 
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -26,8 +31,6 @@ FunctionExprNodeのexecuteでMaterializedFrameにframeの中身をコピーす�
  */
 @ExportLibrary(InteropLibrary.class)
 public final class CrFunction implements TruffleObject, Cloneable {
-    static final int INLINE_CACHE_SIZE = 2;
-
     /**
      * The name of the function.
      */
@@ -40,6 +43,8 @@ public final class CrFunction implements TruffleObject, Cloneable {
     /**
      * The implementation of this function.
      */
+    private final CrLanguage language;
+    private final FrameDescriptor frameDescriptor;
     private final RootCallTarget callTarget;
 
     private final int parameterCount;
@@ -48,10 +53,16 @@ public final class CrFunction implements TruffleObject, Cloneable {
 
     private List<Object> appliedArguments = new LinkedList<>();
 
-    public CrFunction(String name, int parameterCount, RootCallTarget rootCallTarget) {
+    public CrFunction(CrLanguage language, FrameDescriptor frameDescriptor, String name, int parameterCount, ExprNode bodyNode) {
+        this(language, frameDescriptor, name, parameterCount, Truffle.getRuntime().createCallTarget(new CrRootNode(language, frameDescriptor, bodyNode)));
+    }
+
+    private CrFunction(CrLanguage language, FrameDescriptor frameDescriptor, String name, int parameterCount, RootCallTarget callTarget) {
+        this.language = language;
+        this.frameDescriptor = frameDescriptor;
         this.name = name;
         this.parameterCount = parameterCount;
-        this.callTarget = rootCallTarget;
+        this.callTarget = callTarget;
         this.callNode = DirectCallNode.create(this.callTarget);
     }
 
@@ -64,7 +75,7 @@ public final class CrFunction implements TruffleObject, Cloneable {
     }
 
     private CrFunction partialApply(List<Object> args) {
-        CrFunction newFunc = new CrFunction(this.name, this.parameterCount, this.callTarget);
+        CrFunction newFunc = new CrFunction(language, frameDescriptor, this.name, this.parameterCount, this.callTarget);
         newFunc.appliedArguments.addAll(args);
         return newFunc;
     }

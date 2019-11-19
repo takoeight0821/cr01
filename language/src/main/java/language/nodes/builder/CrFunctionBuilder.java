@@ -1,10 +1,7 @@
 package language.nodes.builder;
 
-import com.oracle.truffle.api.RootCallTarget;
-import com.oracle.truffle.api.Truffle;
 import com.oracle.truffle.api.frame.FrameDescriptor;
 import language.CrLanguage;
-import language.nodes.CrRootNode;
 import language.nodes.expr.ExprNode;
 import language.nodes.expr.LetNode;
 import language.nodes.expr.ReadArgumentNode;
@@ -22,7 +19,6 @@ public final class CrFunctionBuilder {
     private LexicalScope lexicalScope;
 
     private final CrLanguage language;
-    private RootCallTarget rootNode;
 
     CrFunctionBuilder(FrameDescriptor frameDescriptor, LexicalScope lexicalScope, CrLanguage language) {
         this.frameDescriptor = frameDescriptor;
@@ -40,14 +36,7 @@ public final class CrFunctionBuilder {
         parameterNodes.push(SimpleDeclNodeGen.create(new ReadArgumentNode(parameterNodes.size()), frameSlot));
     }
 
-    private void addBodyNode(ExprNode bodyNode) {
-        bodyNode = new LetNode(parameterNodes.toArray(new SimpleDeclNode[0]), bodyNode);
-        rootNode = Truffle.getRuntime().createCallTarget(new CrRootNode(language, frameDescriptor, bodyNode));
-
-    }
-
     CrFunction buildCrFunction(ExprNode bodyNode) {
-        this.addBodyNode(bodyNode);
-        return new CrFunction(functionName, parameterNodes.size(), rootNode);
+        return new CrFunction(language, frameDescriptor, functionName, parameterNodes.size(), new LetNode(parameterNodes.toArray(new SimpleDeclNode[0]), bodyNode));
     }
 }
