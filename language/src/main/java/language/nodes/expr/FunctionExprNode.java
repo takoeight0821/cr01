@@ -24,9 +24,14 @@ public final class FunctionExprNode extends ExprNode {
     }
 
     @Override
-    public Object executeGeneric(VirtualFrame frame) {
+    public CrFunction executeCrFunction(VirtualFrame frame) {
         MaterializedFrame capturedEnv = frame.materialize();
         RootCallTarget rootCallTarget = Truffle.getRuntime().createCallTarget(new CrRootNode(language, frame.getFrameDescriptor(), new LetNode(parameterList.toArray(new SimpleDeclNode[0]), bodyNode), capturedEnv));
         return new CrFunction(language, frame.getFrameDescriptor(), "lambda#" + UUID.randomUUID(), parameterList.size(), rootCallTarget);
+    }
+
+    @Override
+    public Object executeGeneric(VirtualFrame frame) {
+        return executeCrFunction(frame);
     }
 }

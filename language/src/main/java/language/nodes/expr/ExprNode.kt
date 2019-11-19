@@ -19,7 +19,7 @@ abstract class ExprNode : Node() {
     }
 
     @Throws(UnexpectedResultException::class)
-    fun executeCrFunction(frame: VirtualFrame?): CrFunction {
+    open fun executeCrFunction(frame: VirtualFrame?): CrFunction {
         return CrTypesGen.expectCrFunction(executeGeneric(frame))
     }
 }

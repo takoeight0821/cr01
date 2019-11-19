@@ -8,6 +8,7 @@ import com.oracle.truffle.api.nodes.NodeInfo;
 import language.CrLanguage;
 import language.runtime.CrContext;
 import language.runtime.CrFunction;
+import org.jetbrains.annotations.NotNull;
 
 @NodeInfo(shortName = "func")
 public final class FunctionNameNode extends ExprNode {
@@ -22,11 +23,18 @@ public final class FunctionNameNode extends ExprNode {
     }
 
     @Override
-    public CrFunction executeGeneric(VirtualFrame frame) {
+    public Object executeGeneric(VirtualFrame frame) {
+        return executeCrFunction(frame);
+    }
+
+    @NotNull
+    @Override
+    public CrFunction executeCrFunction(VirtualFrame frame) {
         if (cachedFunction == null) {
             CompilerDirectives.transferToInterpreterAndInvalidate();
             cachedFunction = reference.get().getFunctionRegistry().lookup(functionName);
         }
+        assert cachedFunction != null;
         return cachedFunction;
     }
 }
