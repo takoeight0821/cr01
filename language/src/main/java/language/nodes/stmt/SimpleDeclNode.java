@@ -16,16 +16,14 @@ public abstract class SimpleDeclNode extends StmtNode {
 
     @Specialization(guards = "isLongOrIllegal(frame)")
     void declLong(VirtualFrame frame, long value) {
-        MaterializedFrame mframe = frame.materialize();
-        mframe.getFrameDescriptor().setFrameSlotKind(getSlot(), FrameSlotKind.Long);
-        mframe.setLong(getSlot(), value);
+        frame.getFrameDescriptor().setFrameSlotKind(getSlot(), FrameSlotKind.Long);
+        frame.setLong(getSlot(), value);
     }
 
     @Specialization(replaces = "declLong")
     void decl(VirtualFrame frame, Object value) {
-        MaterializedFrame mframe = frame.materialize();
-        mframe.getFrameDescriptor().setFrameSlotKind(getSlot(), FrameSlotKind.Object);
-        mframe.setObject(getSlot(), value);
+        frame.getFrameDescriptor().setFrameSlotKind(getSlot(), FrameSlotKind.Object);
+        frame.setObject(getSlot(), value);
     }
 
     boolean isLongOrIllegal(VirtualFrame frame) {
