@@ -21,15 +21,15 @@ class CrNodeFactory(private val language: CrLanguage) {
     /*
     CrFunctionBuilder
      */
-    fun startToplevelFunction(): CrFunctionBuilder {
+    fun startToplevelFunction(functionName: String): CrFunctionBuilder {
         frameDescriptor = FrameDescriptor()
-        return startFunction()
+        return startFunction(functionName)
     }
 
-    fun startFunction(): CrFunctionBuilder {
+    fun startFunction(functionName: String): CrFunctionBuilder {
         lexicalScope = LexicalScope(lexicalScope)
         val functionBuilder =
-            CrFunctionBuilder(frameDescriptor!!, lexicalScope!!, language)
+            CrFunctionBuilder(frameDescriptor!!, lexicalScope!!, language, functionName)
         functionBuilders.addFirst(functionBuilder)
         return functionBuilder
     }
@@ -94,13 +94,10 @@ internal class LexicalScope(val outer: LexicalScope?) {
 class CrFunctionBuilder internal constructor(
     private val frameDescriptor: FrameDescriptor,
     private val lexicalScope: LexicalScope,
-    private val language: CrLanguage
+    private val language: CrLanguage,
+    private val functionName: String
 ) {
-    private var functionName: String? = null
     private val parameterNodes = LinkedList<SimpleDeclNode>()
-    fun setFunctionName(functionName: String?) {
-        this.functionName = functionName
-    }
 
     fun addParameter(name: String) {
         val frameSlot = frameDescriptor.addFrameSlot(name + "#" + UUID.randomUUID())

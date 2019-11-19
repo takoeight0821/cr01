@@ -30,8 +30,7 @@ public class Cr01ParseTreeListener extends Cr01BaseListener {
 
     @Override
     public void enterFunDecl(Cr01Parser.FunDeclContext ctx) {
-        CrFunctionBuilder crFunctionBuilder = factory.startToplevelFunction();
-        crFunctionBuilder.setFunctionName(ctx.name.getText());
+        CrFunctionBuilder crFunctionBuilder = factory.startToplevelFunction(ctx.name.getText());
         ctx.params.forEach((param) -> crFunctionBuilder.addParameter(param.getText()));
     }
 
@@ -92,8 +91,7 @@ public class Cr01ParseTreeListener extends Cr01BaseListener {
 
     @Override
     public void enterFnExpr(Cr01Parser.FnExprContext ctx) {
-        CrFunctionBuilder builder = factory.startFunction();
-        builder.setFunctionName("lambda" + UUID.randomUUID());
+        CrFunctionBuilder builder = factory.startFunction("lambda#" + UUID.randomUUID());
         ctx.params.forEach((param) -> builder.addParameter(param.getText()));
     }
 
