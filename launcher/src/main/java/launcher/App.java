@@ -9,9 +9,9 @@ import java.util.stream.Collectors;
 
 public class App {
     public static void main(String... args) throws IOException {
-        var ctx = Context.create("cr01");
-        var br = new BufferedReader(new InputStreamReader(System.in));
-        var src = br.lines().collect(Collectors.joining());
+        Context ctx = Context.create("cr01");
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        String src = br.lines().collect(Collectors.joining());
 
         System.out.println(ctx.eval("cr01", src));
     }
