@@ -41,7 +41,7 @@ dependencies {
 application {
     // Define the main class for the application.
     mainClassName = 'launcher.App'
-    applicationDefaultJvmArgs = ['-Dtruffle.class.path.append=../language/build/classes/java/main']
+    applicationDefaultJvmArgs = ['-Dtruffle.class.path.append=../language/build/libs/language.jar']
 }
 
 run {
