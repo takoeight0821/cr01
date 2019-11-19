@@ -61,12 +61,12 @@ class CrNodeFactory(private val language: CrLanguage) {
      *
      * @param name
      */
-    fun createVar(name: String?): ExprNode = when {
+    fun createVar(name: String): ExprNode = when {
         lexicalScope!!.locals.containsKey(name) -> VariableNodeGen.create(lexicalScope!!.locals[name])
         else -> FunctionNameNode(language, name)
     }
 
-    fun createInfix(opType: Int, left: ExprNode?, right: ExprNode?): BinaryNode? =
+    fun createInfix(opType: Int, left: ExprNode, right: ExprNode): BinaryNode? =
         when (opType) {
             Cr01Lexer.OP_ADD -> AddNodeGen.create(left, right)
             Cr01Lexer.OP_SUB -> SubNodeGen.create(left, right)
