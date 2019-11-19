@@ -57,7 +57,6 @@ public class Cr01ParseTreeListener extends Cr01BaseListener {
     public void exitInfixExpr(Cr01Parser.InfixExprContext ctx) {
         var right = nodes.pop();
         var left = nodes.pop();
-
         nodes.push(factory.createInfix(ctx.op.getType(), left, right));
     }
 
