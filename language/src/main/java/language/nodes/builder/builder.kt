@@ -34,13 +34,13 @@ class CrNodeFactory(private val language: CrLanguage) {
         return functionBuilder
     }
 
-    fun endFunction(bodyNode: ExprNode?): CrFunction {
+    fun endFunction(bodyNode: ExprNode): CrFunction {
         val functionBuilder = functionBuilders.removeFirst()
         lexicalScope = lexicalScope!!.outer
         return functionBuilder.buildCrFunction(bodyNode)
     }
 
-    fun createFunctionExpr(bodyNode: ExprNode?): FunctionExprNode =
+    fun createFunctionExpr(bodyNode: ExprNode): FunctionExprNode =
         functionBuilders.removeFirst().buildFunctionExprNode(bodyNode)
 
     fun startLet() {
@@ -48,7 +48,7 @@ class CrNodeFactory(private val language: CrLanguage) {
         letExprBuilders.addFirst(LetExprBuilder(lexicalScope!!, frameDescriptor!!))
     }
 
-    fun endLet(bodyNode: ExprNode?): LetNode {
+    fun endLet(bodyNode: ExprNode): LetNode {
         lexicalScope = lexicalScope!!.outer
         return letExprBuilders.removeFirst().buildLetNode(bodyNode)
     }
@@ -105,7 +105,7 @@ class CrFunctionBuilder internal constructor(
         parameterNodes.push(SimpleDeclNodeGen.create(ReadArgumentNode(parameterNodes.size), frameSlot))
     }
 
-    fun buildCrFunction(bodyNode: ExprNode?): CrFunction {
+    fun buildCrFunction(bodyNode: ExprNode): CrFunction {
         return CrFunction(
             language, frameDescriptor, functionName, parameterNodes.size,
             Truffle.getRuntime().createCallTarget(
@@ -118,7 +118,7 @@ class CrFunctionBuilder internal constructor(
         )
     }
 
-    fun buildFunctionExprNode(bodyNode: ExprNode?): FunctionExprNode {
+    fun buildFunctionExprNode(bodyNode: ExprNode): FunctionExprNode {
         return FunctionExprNode(language, parameterNodes, bodyNode)
     }
 
@@ -135,7 +135,7 @@ class LetExprBuilder internal constructor(
         simpleDeclNodes.push(SimpleDeclNodeGen.create(value, frameSlot))
     }
 
-    fun buildLetNode(bodyNode: ExprNode?): LetNode {
+    fun buildLetNode(bodyNode: ExprNode): LetNode {
         return LetNode(simpleDeclNodes.toTypedArray(), bodyNode)
     }
 
