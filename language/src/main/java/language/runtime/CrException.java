@@ -11,7 +11,7 @@ public class CrException extends RuntimeException implements TruffleException {
 
     private final Node location;
 
-    CrException(String message, Node location) {
+    private CrException(String message, Node location) {
         super(message);
         this.location = location;
     }
@@ -46,7 +46,9 @@ public class CrException extends RuntimeException implements TruffleException {
         for (Object value : values) {
             result.append(sep);
             sep = ", ";
-            if (value == null || InteropLibrary.getFactory().getUncached().isNull(value)) {
+            if (value == null) {
+                result.append("null");
+            } else if (InteropLibrary.getFactory().getUncached().isNull(value)) {
                 result.append(CrLanguage.toString(value));
             } else {
                 result.append(CrLanguage.getTypeInfo(value));
