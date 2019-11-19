@@ -34,8 +34,7 @@ dependencies {
     // Use JUnit test framework
     testImplementation 'junit:junit:4.12'
 
-    implementation files("../language/build/classes/java/main")
-    implementation files("../language/build/classes/kotlin/main")
+    implementation files("../language/build/libs/language.jar")
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
 }
 
