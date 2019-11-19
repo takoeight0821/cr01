@@ -77,7 +77,7 @@ class CrNodeFactory(private val language: CrLanguage) {
 
     fun createNumber(value: Long): LongNode = LongNode(value)
 
-    fun createApply(funcNode: ExprNode?, argNodes: Array<ExprNode?>?): InvokeNode = InvokeNode(funcNode, argNodes)
+    fun createApply(funcNode: ExprNode, argNodes: Array<ExprNode>): InvokeNode = InvokeNode(funcNode, argNodes)
 }
 
 internal class LexicalScope(val outer: LexicalScope?) {
