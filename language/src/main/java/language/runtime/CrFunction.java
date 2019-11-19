@@ -2,7 +2,6 @@ package language.runtime;
 
 import com.oracle.truffle.api.CompilerDirectives;
 import com.oracle.truffle.api.RootCallTarget;
-import com.oracle.truffle.api.Truffle;
 import com.oracle.truffle.api.frame.FrameDescriptor;
 import com.oracle.truffle.api.interop.ArityException;
 import com.oracle.truffle.api.interop.InteropLibrary;
@@ -12,8 +11,6 @@ import com.oracle.truffle.api.library.ExportMessage;
 import com.oracle.truffle.api.nodes.DirectCallNode;
 import com.oracle.truffle.api.source.SourceSection;
 import language.CrLanguage;
-import language.nodes.CrRootNode;
-import language.nodes.expr.ExprNode;
 
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -53,11 +50,7 @@ public final class CrFunction implements TruffleObject, Cloneable {
 
     private List<Object> appliedArguments = new LinkedList<>();
 
-    public CrFunction(CrLanguage language, FrameDescriptor frameDescriptor, String name, int parameterCount, ExprNode bodyNode) {
-        this(language, frameDescriptor, name, parameterCount, Truffle.getRuntime().createCallTarget(new CrRootNode(language, frameDescriptor, bodyNode)));
-    }
-
-    private CrFunction(CrLanguage language, FrameDescriptor frameDescriptor, String name, int parameterCount, RootCallTarget callTarget) {
+    public CrFunction(CrLanguage language, FrameDescriptor frameDescriptor, String name, int parameterCount, RootCallTarget callTarget) {
         this.language = language;
         this.frameDescriptor = frameDescriptor;
         this.name = name;

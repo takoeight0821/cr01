@@ -11,7 +11,7 @@ import java.util.LinkedList;
 
 public final class CrNodeFactory {
     private final CrLanguage language;
-    private final FrameDescriptor frameDescriptor = new FrameDescriptor();
+    private FrameDescriptor frameDescriptor;
     private LexicalScope lexicalScope;
 
     private LinkedList<CrFunctionBuilder> functionBuilders = new LinkedList<>();
@@ -24,6 +24,11 @@ public final class CrNodeFactory {
     /*
     CrFunctionBuilder
      */
+    public CrFunctionBuilder startToplevelFunction() {
+        frameDescriptor = new FrameDescriptor();
+        return startFunction();
+    }
+
     public CrFunctionBuilder startFunction() {
         lexicalScope = new LexicalScope(lexicalScope);
         CrFunctionBuilder functionBuilder = new CrFunctionBuilder(frameDescriptor, lexicalScope, language);

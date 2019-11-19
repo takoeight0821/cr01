@@ -3,7 +3,6 @@ package language;
 import language.nodes.builder.CrFunctionBuilder;
 import language.nodes.builder.CrNodeFactory;
 import language.nodes.expr.ExprNode;
-import language.nodes.expr.FunctionExprNode;
 import language.parser.Cr01BaseListener;
 import language.parser.Cr01Parser;
 import language.runtime.CrFunction;
@@ -31,7 +30,7 @@ public class Cr01ParseTreeListener extends Cr01BaseListener {
 
     @Override
     public void enterFunDecl(Cr01Parser.FunDeclContext ctx) {
-        CrFunctionBuilder crFunctionBuilder = factory.startFunction();
+        CrFunctionBuilder crFunctionBuilder = factory.startToplevelFunction();
         crFunctionBuilder.setFunctionName(ctx.name.getText());
         ctx.params.forEach((param) -> crFunctionBuilder.addParameter(param.getText()));
     }
