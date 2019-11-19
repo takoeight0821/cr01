@@ -66,11 +66,7 @@ public final class CrFunction implements TruffleObject, Cloneable {
         this.callNode = DirectCallNode.create(this.callTarget);
     }
 
-    public List<Object> getAppliedArguments() {
-        return this.appliedArguments;
-    }
-
-    public int arity() {
+    private int arity() {
         return parameterCount - appliedArguments.size();
     }
 

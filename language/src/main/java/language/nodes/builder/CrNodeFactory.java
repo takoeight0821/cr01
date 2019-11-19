@@ -37,6 +37,11 @@ public final class CrNodeFactory {
         return functionBuilder.buildCrFunction(bodyNode);
     }
 
+    public FunctionExprNode createFunctionExpr(ExprNode bodyNode) {
+        CrFunctionBuilder functionBuilder = functionBuilders.removeFirst();
+        return functionBuilder.buildFunctionExprNode(bodyNode);
+    }
+
     public CrFunctionBuilder getCurrentFunction() {
         return functionBuilders.peekFirst();
     }

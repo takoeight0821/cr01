@@ -3,6 +3,7 @@ package language.nodes.builder;
 import com.oracle.truffle.api.frame.FrameDescriptor;
 import language.CrLanguage;
 import language.nodes.expr.ExprNode;
+import language.nodes.expr.FunctionExprNode;
 import language.nodes.expr.LetNode;
 import language.nodes.expr.ReadArgumentNode;
 import language.nodes.stmt.SimpleDeclNode;
@@ -38,5 +39,9 @@ public final class CrFunctionBuilder {
 
     CrFunction buildCrFunction(ExprNode bodyNode) {
         return new CrFunction(language, frameDescriptor, functionName, parameterNodes.size(), new LetNode(parameterNodes.toArray(new SimpleDeclNode[0]), bodyNode));
+    }
+
+    FunctionExprNode buildFunctionExprNode(ExprNode bodyNode) {
+        return new FunctionExprNode(this.language, this.parameterNodes, bodyNode);
     }
 }

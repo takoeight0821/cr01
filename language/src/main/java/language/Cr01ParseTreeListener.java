@@ -101,7 +101,6 @@ public class Cr01ParseTreeListener extends Cr01BaseListener {
 
     @Override
     public void exitFnExpr(Cr01Parser.FnExprContext ctx) {
-        CrFunction function = factory.endFunction(nodes.pop());
-        nodes.push(new FunctionExprNode(function));
+        nodes.push(factory.createFunctionExpr(nodes.pop()));
     }
 }
