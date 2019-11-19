@@ -6,5 +6,5 @@ import com.oracle.truffle.api.nodes.NodeInfo
 
 @NodeInfo(description = "The abstract base node for all statements")
 abstract class StmtNode : Node() {
-    abstract fun executeVoid(frame: VirtualFrame?)
+    abstract fun executeVoid(frame: VirtualFrame)
 }

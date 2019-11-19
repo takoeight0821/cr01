@@ -12,14 +12,15 @@ import language.runtime.CrFunction
 @TypeSystemReference(CrTypes::class)
 @NodeInfo(description = "The abstract base node for all expressions")
 abstract class ExprNode : Node() {
-    abstract fun executeGeneric(frame: VirtualFrame?): Any?
+    abstract fun executeGeneric(frame: VirtualFrame): Any
+
     @Throws(UnexpectedResultException::class)
-    open fun executeLong(frame: VirtualFrame?): Long {
+    open fun executeLong(frame: VirtualFrame): Long {
         return CrTypesGen.expectLong(executeGeneric(frame))
     }
 
     @Throws(UnexpectedResultException::class)
-    open fun executeCrFunction(frame: VirtualFrame?): CrFunction {
+    open fun executeCrFunction(frame: VirtualFrame): CrFunction {
         return CrTypesGen.expectCrFunction(executeGeneric(frame))
     }
 }
