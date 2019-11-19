@@ -6,7 +6,7 @@ import com.oracle.truffle.api.interop.TruffleObject
 import com.oracle.truffle.api.nodes.NodeInfo
 import language.CrLanguage
 
-class CrContext(private val language: CrLanguage) {
+class CrContext(language: CrLanguage) {
     val functionRegistry: CrFunctionRegistry = CrFunctionRegistry(language)
 
     companion object {
@@ -30,12 +30,11 @@ class CrContext(private val language: CrLanguage) {
         }
 
         fun lookupNodeInfo(aClass: Class<*>?): NodeInfo? {
-            if (aClass == null) {
-                return null
+            return if (aClass == null) {
+                null
+            } else {
+                aClass.getAnnotation(NodeInfo::class.java) ?: lookupNodeInfo(aClass.superclass)
             }
-            val info =
-                aClass.getAnnotation(NodeInfo::class.java)
-            return info ?: lookupNodeInfo(aClass.superclass)
         }
     }
 
