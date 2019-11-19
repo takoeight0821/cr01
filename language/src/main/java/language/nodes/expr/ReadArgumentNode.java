@@ -20,7 +20,7 @@ public class ReadArgumentNode extends ExprNode {
             return args[index];
         } else {
             outOfBoundsTaken.enter();
-            return CrNull.SINGLETON;
+            return CrNull.INSTANCE;
         }
     }
 }

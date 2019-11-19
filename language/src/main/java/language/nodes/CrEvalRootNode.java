@@ -63,7 +63,7 @@ public final class CrEvalRootNode extends RootNode {
         }
         if (mainCallNode == null) {
             /* The source code did not have a main function, so nothing to execute. */
-            return CrNull.SINGLETON;
+            return CrNull.INSTANCE;
         } else {
             Object[] arguments = Arrays.stream(frame.getArguments()).map(CrContext::fromForeignValue).toArray();
             return mainCallNode.call(arguments);
