@@ -4,7 +4,6 @@ import com.oracle.truffle.api.CallTarget
 import com.oracle.truffle.api.Truffle
 import com.oracle.truffle.api.TruffleLanguage
 import com.oracle.truffle.api.interop.InteropLibrary
-import com.oracle.truffle.api.nodes.RootNode
 import com.oracle.truffle.api.source.Source
 import language.nodes.CrEvalRootNode
 import language.parser.Cr01Lexer
@@ -15,6 +14,7 @@ import org.antlr.v4.runtime.CharStreams
 import org.antlr.v4.runtime.CommonTokenStream
 import org.antlr.v4.runtime.tree.ParseTreeWalker
 
+
 @TruffleLanguage.Registration(
     name = "cr01",
     id = "cr01",
@@ -24,20 +24,14 @@ import org.antlr.v4.runtime.tree.ParseTreeWalker
 class CrLanguage : TruffleLanguage<CrContext>() {
     override fun parse(request: ParsingRequest): CallTarget {
         val functions = parseSource(request.source)
-        val main = functions["main"]
-        val evalMain: RootNode
-        evalMain = CrEvalRootNode(this, main!!.callTarget, functions)
+        val evalMain = CrEvalRootNode(this, functions["main"]?.callTarget, functions)
         return Truffle.getRuntime().createCallTarget(evalMain)
     }
 
     private fun parseSource(source: Source): Map<String, CrFunction> {
-        val charStream = CharStreams.fromString(source.characters.toString())
-        val lexer = Cr01Lexer(charStream)
-        val parser = Cr01Parser(CommonTokenStream(lexer))
-        val prog = parser.prog()
-        val treeWalker = ParseTreeWalker()
+        val parser = Cr01Parser(CommonTokenStream(Cr01Lexer(CharStreams.fromString(source.characters.toString()))))
         val listener = Cr01ParseTreeListener(this)
-        treeWalker.walk(listener, prog)
+        ParseTreeWalker().walk(listener, parser.prog())
         return listener.getFunctions()
     }
 
@@ -47,9 +41,7 @@ class CrLanguage : TruffleLanguage<CrContext>() {
 
     companion object {
         const val MIME = "application/x-cr01"
-        fun toString(value: Any): String {
-            return value.toString()
-        }
+        fun toString(value: Any): String = value.toString()
 
         fun getTypeInfo(value: Any?): String {
             if (value == null) {

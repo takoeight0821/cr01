@@ -10,28 +10,22 @@ import com.oracle.truffle.api.library.ExportLibrary
 import com.oracle.truffle.api.library.ExportMessage
 import com.oracle.truffle.api.nodes.DirectCallNode
 import language.CrLanguage
-import java.util.*
-import java.util.stream.Collectors
-import java.util.stream.Stream
 
 @ExportLibrary(InteropLibrary::class)
-class CrFunction(
+class CrFunction @JvmOverloads constructor(
     private val language: CrLanguage,
     private val frameDescriptor: FrameDescriptor,
     val name: String,
     private val parameterCount: Int,
-    val callTarget: RootCallTarget
+    val callTarget: RootCallTarget,
+    private val appliedArguments: Array<Any> = arrayOf()
 ) : TruffleObject, Cloneable {
 
     private val callNode: DirectCallNode = DirectCallNode.create(callTarget)
-    private val appliedArguments: LinkedList<Any> = LinkedList()
     private fun arity(): Int = parameterCount - appliedArguments.size
 
-    private fun partialApply(args: List<Any>): CrFunction {
-        val newFunc = CrFunction(language, frameDescriptor, name, parameterCount, callTarget)
-        newFunc.appliedArguments.addAll(args)
-        return newFunc
-    }
+    private fun partialApply(args: Array<Any>): CrFunction =
+        CrFunction(language, frameDescriptor, name, parameterCount, callTarget, arrayOf(*appliedArguments, *args))
 
     override fun toString(): String = name + appliedArguments + ":" + arity()
 
@@ -46,17 +40,10 @@ class CrFunction(
             CompilerDirectives.transferToInterpreter()
             throw ArityException.create(arity(), arguments.size)
         }
-        arity() > arguments.size -> partialApply(
-            Arrays.stream(arguments).collect(
-                Collectors.toList()
-            )
-        )
-        else -> callNode.call(
-            *Stream.concat(
-                appliedArguments.stream(),
-                Arrays.stream(arguments)
-            ).toArray()
-        )
+        arity() > arguments.size -> partialApply(arguments)
+        else -> {
+            callNode.call(*this.appliedArguments, *arguments)
+        }
     }
 
 }
