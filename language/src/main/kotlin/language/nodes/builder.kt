@@ -18,14 +18,18 @@ class CrNodeFactory(private val language: CrLanguage) {
     private var lexicalScope: LexicalScope? = null
     private val functionBuilders = LinkedList<CrFunctionBuilder>()
     private val letExprBuilders = LinkedList<LetExprBuilder>()
-    /*
-    CrFunctionBuilder
+
+    /**
+     * start building toplevel function
      */
     fun startToplevelFunction(functionName: String): CrFunctionBuilder {
         frameDescriptor = FrameDescriptor()
         return startFunction(functionName)
     }
 
+    /**
+     * start building inner function
+     */
     fun startFunction(functionName: String): CrFunctionBuilder {
         lexicalScope = LexicalScope(lexicalScope)
         val functionBuilder = CrFunctionBuilder(frameDescriptor!!, lexicalScope!!, language, functionName)
@@ -33,12 +37,18 @@ class CrNodeFactory(private val language: CrLanguage) {
         return functionBuilder
     }
 
+    /**
+     * finish building function and return CrFunction (represents supercombinator)
+     */
     fun endFunction(bodyNode: ExprNode): CrFunction {
         val functionBuilder = functionBuilders.removeFirst()
         lexicalScope = lexicalScope!!.outer
         return functionBuilder.buildCrFunction(bodyNode)
     }
 
+    /**
+     * finish building function and return FunctionExprNode (represents closure)
+     */
     fun createFunctionExpr(bodyNode: ExprNode): FunctionExprNode =
         functionBuilders.removeFirst().buildFunctionExprNode(bodyNode)
 
@@ -55,11 +65,6 @@ class CrNodeFactory(private val language: CrLanguage) {
     val currentLet: LetExprBuilder
         get() = letExprBuilders.peekFirst()
 
-    /**
-     * create the node representing variable and push it to this.nodes;
-     *
-     * @param name
-     */
     fun createVar(name: String): ExprNode = when {
         lexicalScope!!.locals.containsKey(name) -> VariableNodeGen.create(lexicalScope!!.locals[name])
         else -> FunctionNameNode(language, name)
@@ -80,10 +85,9 @@ class CrNodeFactory(private val language: CrLanguage) {
 }
 
 internal class LexicalScope(val outer: LexicalScope?) {
-    val locals: MutableMap<String, FrameSlot>
+    val locals: MutableMap<String, FrameSlot> = HashMap()
 
     init {
-        locals = HashMap()
         if (outer != null) {
             locals.putAll(outer.locals)
         }
