@@ -6,10 +6,14 @@ import com.oracle.truffle.api.TruffleLanguage
 import com.oracle.truffle.api.interop.TruffleObject
 import com.oracle.truffle.api.nodes.NodeInfo
 import java.io.PrintWriter
+import java.util.HashMap
 
 class CrContext(env: TruffleLanguage.Env) {
-    val functionRegistry: CrFunctionRegistry = CrFunctionRegistry()
+    private val functions: MutableMap<String, CrFunction> = HashMap()
     val output: PrintWriter = PrintWriter(env.out(), true)
+
+    fun lookup(name: String): CrFunction? = functions[name]
+    fun register(name: String, function: CrFunction) = functions.put(name, function)
 
     companion object {
         fun fromForeignValue(a: Any): Any {
@@ -38,5 +42,4 @@ class CrContext(env: TruffleLanguage.Env) {
             }
         }
     }
-
 }

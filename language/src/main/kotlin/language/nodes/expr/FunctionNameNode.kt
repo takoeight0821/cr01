@@ -19,7 +19,7 @@ class FunctionNameNode(language: CrLanguage, private val functionName: String) :
     override fun executeCrFunction(frame: VirtualFrame): CrFunction = when (cachedFunction) {
         null -> {
             CompilerDirectives.transferToInterpreterAndInvalidate()
-            cachedFunction = reference.get().functionRegistry.lookup(functionName)
+            cachedFunction = reference.get().lookup(functionName)
             cachedFunction!!
         }
         else -> {

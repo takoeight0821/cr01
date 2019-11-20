@@ -47,10 +47,10 @@ class CrEvalRootNode(
         if (!registered) {
             CompilerDirectives.transferToInterpreterAndInvalidate()
             functions.forEach { (name, crFunction) ->
-                reference.get().functionRegistry.register(name, crFunction)
+                reference.get().register(name, crFunction)
             }
             builtins(language).forEach { (name, crFunction) ->
-                reference.get().functionRegistry.register(name, crFunction)
+                reference.get().register(name, crFunction)
             }
             registered = true
         }
