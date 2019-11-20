@@ -8,6 +8,7 @@ import com.oracle.truffle.api.frame.VirtualFrame
 import com.oracle.truffle.api.nodes.DirectCallNode
 import com.oracle.truffle.api.nodes.RootNode
 import language.CrLanguage
+import language.nodes.builtins.builtins
 import language.runtime.CrContext
 import language.runtime.CrFunction
 import language.runtime.CrNull
@@ -22,7 +23,7 @@ import java.util.*
  * understood by Cr01.
  */
 class CrEvalRootNode(
-    language: CrLanguage,
+    private val language: CrLanguage,
     rootFunction: RootCallTarget?,
     private val functions: Map<String, CrFunction>
 ) : RootNode(language) {
@@ -48,6 +49,9 @@ class CrEvalRootNode(
         if (!registered) {
             CompilerDirectives.transferToInterpreterAndInvalidate()
             functions.forEach { (name: String?, crFunction: CrFunction?) ->
+                reference.get().functionRegistry.register(name, crFunction)
+            }
+            builtins(language).forEach { (name, crFunction) ->
                 reference.get().functionRegistry.register(name, crFunction)
             }
             registered = true

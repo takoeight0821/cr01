@@ -41,7 +41,7 @@ class CrLanguage : TruffleLanguage<CrContext>() {
         return listener.getFunctions()
     }
 
-    override fun createContext(env: Env): CrContext = CrContext(this)
+    override fun createContext(env: Env): CrContext = CrContext(this, env)
 
     override fun isObjectOfLanguage(`object`: Any): Boolean = false
 

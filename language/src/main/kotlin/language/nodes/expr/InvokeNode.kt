@@ -33,7 +33,7 @@ class InvokeNode(
         return invoke(function, argumentValues)
     }
 
-    private operator fun invoke(function: Any, arguments: List<Any>): Any {
+    private fun invoke(function: Any, arguments: List<Any>): Any {
         return try {
             library.execute(function, *arguments.toTypedArray())
         } catch (e: ArityException) {

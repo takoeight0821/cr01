@@ -2,12 +2,15 @@ package language.runtime
 
 import com.oracle.truffle.api.CompilerDirectives
 import com.oracle.truffle.api.CompilerDirectives.TruffleBoundary
+import com.oracle.truffle.api.TruffleLanguage
 import com.oracle.truffle.api.interop.TruffleObject
 import com.oracle.truffle.api.nodes.NodeInfo
 import language.CrLanguage
+import java.io.PrintWriter
 
-class CrContext(language: CrLanguage) {
+class CrContext(language: CrLanguage, env: TruffleLanguage.Env) {
     val functionRegistry: CrFunctionRegistry = CrFunctionRegistry(language)
+    val output: PrintWriter = PrintWriter(env.out(), true)
 
     companion object {
         @JvmStatic
