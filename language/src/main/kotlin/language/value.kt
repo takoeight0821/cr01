@@ -23,6 +23,7 @@ class CrFunction @JvmOverloads constructor(
 
     private val callNode: DirectCallNode =
         DirectCallNode.create(callTarget)
+
     private fun arity(): Int = parameterCount - appliedArguments.size
 
     private fun partialApply(args: Array<Any>): CrFunction =

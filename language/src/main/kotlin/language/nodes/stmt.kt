@@ -37,7 +37,8 @@ abstract class SimpleDeclNode : StmtNode() {
 
     @Specialization(replaces = ["declLong"])
     fun decl(frame: VirtualFrame, value: Any) {
-        frame.frameDescriptor.setFrameSlotKind(slot,
+        frame.frameDescriptor.setFrameSlotKind(
+            slot,
             FrameSlotKind.Object
         )
         frame.setObject(slot, value)
