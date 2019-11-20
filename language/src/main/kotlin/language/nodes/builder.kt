@@ -10,7 +10,7 @@ import language.nodes.expr.*
 import language.nodes.stmt.SimpleDeclNode
 import language.nodes.stmt.SimpleDeclNodeGen
 import language.parser.Cr01Lexer
-import language.runtime.CrFunction
+import language.value.CrFunction
 import java.util.*
 
 class CrNodeFactory(private val language: CrLanguage) {
@@ -104,16 +104,17 @@ class CrFunctionBuilder internal constructor(
         parameterNodes.push(SimpleDeclNodeGen.create(ReadArgumentNode(parameterNodes.size), frameSlot))
     }
 
-    fun buildCrFunction(bodyNode: ExprNode): CrFunction = CrFunction(
-        language, frameDescriptor, functionName, parameterNodes.size,
-        Truffle.getRuntime().createCallTarget(
-            CrRootNode(
-                language,
-                frameDescriptor,
-                LetNode(parameterNodes.toTypedArray(), bodyNode)
+    fun buildCrFunction(bodyNode: ExprNode): CrFunction =
+        CrFunction(
+            language, frameDescriptor, functionName, parameterNodes.size,
+            Truffle.getRuntime().createCallTarget(
+                CrRootNode(
+                    language,
+                    frameDescriptor,
+                    LetNode(parameterNodes.toTypedArray(), bodyNode)
+                )
             )
         )
-    )
 
     fun buildFunctionExprNode(bodyNode: ExprNode): FunctionExprNode =
         FunctionExprNode(language, parameterNodes, bodyNode)

@@ -28,8 +28,8 @@ import language.nodes.CrTypesGen
 import language.nodes.stmt.SimpleDeclNode
 import language.runtime.CrContext
 import language.runtime.CrException
-import language.runtime.CrFunction
-import language.runtime.CrNull
+import language.value.CrFunction
+import language.value.CrNull
 import java.util.*
 
 @TypeSystemReference(CrTypes::class)

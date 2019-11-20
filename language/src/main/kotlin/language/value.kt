@@ -1,4 +1,4 @@
-package language.runtime
+package language.value
 
 import com.oracle.truffle.api.CompilerDirectives
 import com.oracle.truffle.api.RootCallTarget
@@ -21,11 +21,19 @@ class CrFunction @JvmOverloads constructor(
     private val appliedArguments: Array<Any> = arrayOf()
 ) : TruffleObject, Cloneable {
 
-    private val callNode: DirectCallNode = DirectCallNode.create(callTarget)
+    private val callNode: DirectCallNode =
+        DirectCallNode.create(callTarget)
     private fun arity(): Int = parameterCount - appliedArguments.size
 
     private fun partialApply(args: Array<Any>): CrFunction =
-        CrFunction(language, frameDescriptor, name, parameterCount, callTarget, arrayOf(*appliedArguments, *args))
+        CrFunction(
+            language,
+            frameDescriptor,
+            name,
+            parameterCount,
+            callTarget,
+            arrayOf(*appliedArguments, *args)
+        )
 
     override fun toString(): String = name + appliedArguments + ":" + arity()
 
@@ -44,4 +52,13 @@ class CrFunction @JvmOverloads constructor(
         else -> callNode.call(*this.appliedArguments, *arguments)
     }
 
+}
+
+@ExportLibrary(InteropLibrary::class)
+@SuppressWarnings("static-method")
+object CrNull : TruffleObject {
+    override fun toString(): String = "NULL"
+
+    @ExportMessage
+    fun isNull(): Boolean = true
 }

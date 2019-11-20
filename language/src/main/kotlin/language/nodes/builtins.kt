@@ -12,7 +12,7 @@ import language.nodes.CrRootNode
 import language.nodes.expr.ExprNode
 import language.nodes.expr.ReadArgumentNode
 import language.runtime.CrContext
-import language.runtime.CrFunction
+import language.value.CrFunction
 import java.io.PrintWriter
 
 @NodeChild(value = "arguments", type = Array<ExprNode>::class)

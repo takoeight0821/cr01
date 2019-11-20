@@ -5,6 +5,7 @@ import com.oracle.truffle.api.CompilerDirectives.TruffleBoundary
 import com.oracle.truffle.api.TruffleLanguage
 import com.oracle.truffle.api.interop.TruffleObject
 import com.oracle.truffle.api.nodes.NodeInfo
+import language.value.CrFunction
 import java.io.PrintWriter
 import java.util.*
 

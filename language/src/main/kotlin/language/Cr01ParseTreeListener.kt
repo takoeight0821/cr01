@@ -4,7 +4,7 @@ import language.nodes.builder.CrNodeFactory
 import language.nodes.expr.ExprNode
 import language.parser.Cr01BaseListener
 import language.parser.Cr01Parser.*
-import language.runtime.CrFunction
+import language.value.CrFunction
 import org.antlr.v4.runtime.Token
 import java.util.*
 import java.util.function.Consumer

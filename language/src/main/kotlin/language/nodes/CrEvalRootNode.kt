@@ -10,7 +10,7 @@ import com.oracle.truffle.api.nodes.RootNode
 import language.CrLanguage
 import language.nodes.builtins.builtins
 import language.runtime.CrContext
-import language.runtime.CrFunction
+import language.value.CrFunction
 
 /**
  * This class performs two additional tasks: (as SimpleLanguage https://github.com/graalvm/simplelanguage/)

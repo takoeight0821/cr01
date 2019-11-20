@@ -9,7 +9,7 @@ import language.nodes.CrEvalRootNode
 import language.parser.Cr01Lexer
 import language.parser.Cr01Parser
 import language.runtime.CrContext
-import language.runtime.CrFunction
+import language.value.CrFunction
 import org.antlr.v4.runtime.CharStreams
 import org.antlr.v4.runtime.CommonTokenStream
 import org.antlr.v4.runtime.tree.ParseTreeWalker
