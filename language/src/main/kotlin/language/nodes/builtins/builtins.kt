@@ -60,7 +60,7 @@ abstract class PrintlnBuiltin : BuiltinNode() {
 
     companion object {
         fun printlnBuiltin(language: CrLanguage): Pair<String, CrFunction> =
-            BuiltinNode.builtin(language, "println", 1, PrintlnBuiltinNodeGen.create(arrayOf(ReadArgumentNode(1))))
+            builtin(language, "println", 1, PrintlnBuiltinNodeGen.create(arrayOf(ReadArgumentNode(1))))
     }
 }
 

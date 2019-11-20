@@ -43,7 +43,9 @@ dependencies {
 jar {
     from {
         configurations.compileClasspath.collect {
-            it.isDirectory() ? it : zipTree(it)
+            if (it.absolutePath.contains("kotlin")) {
+                it.isDirectory() ? it : zipTree(it)
+            }
         }
     }
 }
