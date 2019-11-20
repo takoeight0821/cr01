@@ -41,9 +41,7 @@ class CrFunction @JvmOverloads constructor(
             throw ArityException.create(arity(), arguments.size)
         }
         arity() > arguments.size -> partialApply(arguments)
-        else -> {
-            callNode.call(*this.appliedArguments, *arguments)
-        }
+        else -> callNode.call(*this.appliedArguments, *arguments)
     }
 
 }
