@@ -8,9 +8,7 @@ import com.oracle.truffle.api.library.ExportMessage
 @ExportLibrary(InteropLibrary::class)
 @SuppressWarnings("static-method")
 object CrNull : TruffleObject {
-    override fun toString(): String {
-        return "NULL"
-    }
+    override fun toString(): String = "NULL"
 
     @ExportMessage
     fun isNull(): Boolean = true

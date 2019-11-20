@@ -9,7 +9,7 @@ import language.CrLanguage
 import java.io.PrintWriter
 
 class CrContext(language: CrLanguage, env: TruffleLanguage.Env) {
-    val functionRegistry: CrFunctionRegistry = CrFunctionRegistry(language)
+    val functionRegistry: CrFunctionRegistry = CrFunctionRegistry()
     val output: PrintWriter = PrintWriter(env.out(), true)
 
     companion object {
