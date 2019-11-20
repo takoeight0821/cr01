@@ -24,11 +24,11 @@ import java.util.*
  */
 class CrEvalRootNode(
     private val language: CrLanguage,
-    rootFunction: RootCallTarget?,
+    rootFunction: RootCallTarget,
     private val functions: Map<String, CrFunction>
 ) : RootNode(language) {
     @Child
-    private var mainCallNode: DirectCallNode? = if (rootFunction != null) DirectCallNode.create(rootFunction) else null
+    private var mainCallNode: DirectCallNode = DirectCallNode.create(rootFunction)
     private val reference: ContextReference<CrContext> = language.contextReference
     @CompilationFinal
     private var registered = false
@@ -48,7 +48,7 @@ class CrEvalRootNode(
     override fun execute(frame: VirtualFrame): Any { /* Lazy registrations of functions on first execution. */
         if (!registered) {
             CompilerDirectives.transferToInterpreterAndInvalidate()
-            functions.forEach { (name: String?, crFunction: CrFunction?) ->
+            functions.forEach { (name, crFunction) ->
                 reference.get().functionRegistry.register(name, crFunction)
             }
             builtins(language).forEach { (name, crFunction) ->
@@ -56,12 +56,6 @@ class CrEvalRootNode(
             }
             registered = true
         }
-        return if (mainCallNode == null) { /* The source code did not have a main function, so nothing to execute. */
-            CrNull
-        } else {
-            val arguments = Arrays.stream(frame.arguments).map { obj: Any -> CrContext.fromForeignValue(obj) }.toArray()
-            mainCallNode!!.call(*arguments)
-        }
+        return this.mainCallNode.call(*frame.arguments.map { arg -> CrContext.fromForeignValue(arg) }.toTypedArray())
     }
-
 }

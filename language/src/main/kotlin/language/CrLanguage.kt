@@ -24,7 +24,8 @@ import org.antlr.v4.runtime.tree.ParseTreeWalker
 class CrLanguage : TruffleLanguage<CrContext>() {
     override fun parse(request: ParsingRequest): CallTarget {
         val functions = parseSource(request.source)
-        val evalMain = CrEvalRootNode(this, functions["main"]?.callTarget, functions)
+        val evalMain = functions["main"]?.callTarget?.let { CrEvalRootNode(this, it, functions) }
+            ?: error("function 'main' is not defined")
         return Truffle.getRuntime().createCallTarget(evalMain)
     }
 

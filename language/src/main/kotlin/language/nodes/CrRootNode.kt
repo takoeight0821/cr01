@@ -9,8 +9,8 @@ import language.nodes.expr.ExprNode
 import language.nodes.stmt.StmtNode
 
 class CrRootNode constructor(
-    language: CrLanguage?,
-    frameDescriptor: FrameDescriptor?,
+    language: CrLanguage,
+    frameDescriptor: FrameDescriptor,
     @field:Child private var bodyNode: ExprNode,
     private val capturedEnv: MaterializedFrame? = null
 ) : RootNode(language, frameDescriptor) {

@@ -28,8 +28,7 @@ class CrNodeFactory(private val language: CrLanguage) {
 
     fun startFunction(functionName: String): CrFunctionBuilder {
         lexicalScope = LexicalScope(lexicalScope)
-        val functionBuilder =
-            CrFunctionBuilder(frameDescriptor!!, lexicalScope!!, language, functionName)
+        val functionBuilder = CrFunctionBuilder(frameDescriptor!!, lexicalScope!!, language, functionName)
         functionBuilders.addFirst(functionBuilder)
         return functionBuilder
     }
@@ -66,13 +65,13 @@ class CrNodeFactory(private val language: CrLanguage) {
         else -> FunctionNameNode(language, name)
     }
 
-    fun createInfix(opType: Int, left: ExprNode, right: ExprNode): BinaryNode? =
+    fun createInfix(opType: Int, left: ExprNode, right: ExprNode): BinaryNode =
         when (opType) {
             Cr01Lexer.OP_ADD -> AddNodeGen.create(left, right)
             Cr01Lexer.OP_SUB -> SubNodeGen.create(left, right)
             Cr01Lexer.OP_MUL -> MulNodeGen.create(left, right)
             Cr01Lexer.OP_DIV -> DivNodeGen.create(left, right)
-            else -> null
+            else -> error("unexpected opType\n")
         }
 
     fun createNumber(value: Long): LongNode = LongNode(value)
@@ -126,7 +125,7 @@ class LetExprBuilder internal constructor(
     private val frameDescriptor: FrameDescriptor
 ) {
     private val simpleDeclNodes = LinkedList<SimpleDeclNode>()
-    fun addSimpleDecl(name: String, value: ExprNode?) {
+    fun addSimpleDecl(name: String, value: ExprNode) {
         val frameSlot = frameDescriptor.addFrameSlot(name + "#" + UUID.randomUUID(), FrameSlotKind.Illegal)
         lexicalScope.locals[name] = frameSlot
         simpleDeclNodes.push(SimpleDeclNodeGen.create(value, frameSlot))

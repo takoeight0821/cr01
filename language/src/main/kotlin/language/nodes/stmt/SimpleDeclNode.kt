@@ -11,7 +11,7 @@ import language.nodes.expr.ExprNode
 @NodeField(name = "slot", type = FrameSlot::class)
 @NodeChild(value = "valueNode", type = ExprNode::class)
 abstract class SimpleDeclNode : StmtNode() {
-    protected abstract val slot: FrameSlot?
+    protected abstract val slot: FrameSlot
     @Specialization(guards = ["isLongOrIllegal(frame)"])
     fun declLong(frame: VirtualFrame, value: Long) {
         frame.frameDescriptor.setFrameSlotKind(slot, FrameSlotKind.Long)
@@ -19,7 +19,7 @@ abstract class SimpleDeclNode : StmtNode() {
     }
 
     @Specialization(replaces = ["declLong"])
-    fun decl(frame: VirtualFrame, value: Any?) {
+    fun decl(frame: VirtualFrame, value: Any) {
         frame.frameDescriptor.setFrameSlotKind(slot, FrameSlotKind.Object)
         frame.setObject(slot, value)
     }

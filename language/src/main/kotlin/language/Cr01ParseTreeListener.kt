@@ -8,11 +8,12 @@ import language.runtime.CrFunction
 import org.antlr.v4.runtime.Token
 import java.util.*
 import java.util.function.Consumer
+import kotlin.collections.HashMap
 
-class Cr01ParseTreeListener internal constructor(language: CrLanguage?) : Cr01BaseListener() {
-    private val functions: MutableMap<String, CrFunction>
-    private val nodes = LinkedList<ExprNode?>()
-    private val factory: CrNodeFactory
+class Cr01ParseTreeListener internal constructor(language: CrLanguage) : Cr01BaseListener() {
+    private val functions: MutableMap<String, CrFunction> = HashMap()
+    private val nodes: Stack<ExprNode> = Stack()
+    private val factory: CrNodeFactory = CrNodeFactory(language)
 
     fun getFunctions(): Map<String, CrFunction> {
         return functions
@@ -28,7 +29,7 @@ class Cr01ParseTreeListener internal constructor(language: CrLanguage?) : Cr01Ba
     }
 
     override fun exitFunDecl(ctx: FunDeclContext) {
-        val function = factory.endFunction(nodes.pop()!!)
+        val function = factory.endFunction(nodes.pop())
         functions[function.name] = function
     }
 
@@ -39,14 +40,14 @@ class Cr01ParseTreeListener internal constructor(language: CrLanguage?) : Cr01Ba
                 args[ctx.args.size - i] = nodes.pop()
             }
             val func = nodes.pop()
-            nodes.push(factory.createApply(func!!, args.requireNoNulls()))
+            nodes.push(factory.createApply(func, args.requireNoNulls()))
         }
     }
 
     override fun exitInfixExpr(ctx: InfixExprContext) {
         val right = nodes.pop()
         val left = nodes.pop()
-        nodes.push(factory.createInfix(ctx.op.type, left!!, right!!))
+        nodes.push(factory.createInfix(ctx.op.type, left, right))
     }
 
     override fun exitNumberExpr(ctx: NumberExprContext) {
@@ -71,7 +72,7 @@ class Cr01ParseTreeListener internal constructor(language: CrLanguage?) : Cr01Ba
 
     override fun exitLetExpr(ctx: LetExprContext) {
         val bodyNode = nodes.pop()
-        nodes.push(factory.endLet(bodyNode!!))
+        nodes.push(factory.endLet(bodyNode))
     }
 
     override fun enterFnExpr(ctx: FnExprContext) {
@@ -84,11 +85,7 @@ class Cr01ParseTreeListener internal constructor(language: CrLanguage?) : Cr01Ba
     }
 
     override fun exitFnExpr(ctx: FnExprContext) {
-        nodes.push(factory.createFunctionExpr(nodes.pop()!!))
+        nodes.push(factory.createFunctionExpr(nodes.pop()))
     }
 
-    init {
-        functions = HashMap()
-        factory = CrNodeFactory(language!!)
-    }
 }
