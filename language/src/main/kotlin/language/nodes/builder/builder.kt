@@ -105,22 +105,19 @@ class CrFunctionBuilder internal constructor(
         parameterNodes.push(SimpleDeclNodeGen.create(ReadArgumentNode(parameterNodes.size), frameSlot))
     }
 
-    fun buildCrFunction(bodyNode: ExprNode): CrFunction {
-        return CrFunction(
-            language, frameDescriptor, functionName, parameterNodes.size,
-            Truffle.getRuntime().createCallTarget(
-                CrRootNode(
-                    language,
-                    frameDescriptor,
-                    LetNode(parameterNodes.toTypedArray(), bodyNode)
-                )
+    fun buildCrFunction(bodyNode: ExprNode): CrFunction = CrFunction(
+        language, frameDescriptor, functionName, parameterNodes.size,
+        Truffle.getRuntime().createCallTarget(
+            CrRootNode(
+                language,
+                frameDescriptor,
+                LetNode(parameterNodes.toTypedArray(), bodyNode)
             )
         )
-    }
+    )
 
-    fun buildFunctionExprNode(bodyNode: ExprNode): FunctionExprNode {
-        return FunctionExprNode(language, parameterNodes, bodyNode)
-    }
+    fun buildFunctionExprNode(bodyNode: ExprNode): FunctionExprNode =
+        FunctionExprNode(language, parameterNodes, bodyNode)
 
 }
 
@@ -135,8 +132,6 @@ class LetExprBuilder internal constructor(
         simpleDeclNodes.push(SimpleDeclNodeGen.create(value, frameSlot))
     }
 
-    fun buildLetNode(bodyNode: ExprNode): LetNode {
-        return LetNode(simpleDeclNodes.toTypedArray(), bodyNode)
-    }
+    fun buildLetNode(bodyNode: ExprNode): LetNode = LetNode(simpleDeclNodes.toTypedArray(), bodyNode)
 
 }

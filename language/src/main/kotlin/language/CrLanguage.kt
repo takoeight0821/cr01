@@ -6,7 +6,6 @@ import com.oracle.truffle.api.TruffleLanguage
 import com.oracle.truffle.api.interop.InteropLibrary
 import com.oracle.truffle.api.nodes.RootNode
 import com.oracle.truffle.api.source.Source
-import language.CrLanguage
 import language.nodes.CrEvalRootNode
 import language.parser.Cr01Lexer
 import language.parser.Cr01Parser
@@ -27,17 +26,12 @@ class CrLanguage : TruffleLanguage<CrContext>() {
         val functions = parseSource(request.source)
         val main = functions["main"]
         val evalMain: RootNode
-        evalMain = if (main != null) {
-            CrEvalRootNode(this, main.callTarget, functions)
-        } else {
-            CrEvalRootNode(this, null, functions)
-        }
+        evalMain = CrEvalRootNode(this, main!!.callTarget, functions)
         return Truffle.getRuntime().createCallTarget(evalMain)
     }
 
     private fun parseSource(source: Source): Map<String, CrFunction> {
-        val charStream =
-            CharStreams.fromString(source.characters.toString())
+        val charStream = CharStreams.fromString(source.characters.toString())
         val lexer = Cr01Lexer(charStream)
         val parser = Cr01Parser(CommonTokenStream(lexer))
         val prog = parser.prog()
@@ -47,13 +41,9 @@ class CrLanguage : TruffleLanguage<CrContext>() {
         return listener.getFunctions()
     }
 
-    override fun createContext(env: Env): CrContext {
-        return CrContext(this)
-    }
+    override fun createContext(env: Env): CrContext = CrContext(this)
 
-    override fun isObjectOfLanguage(`object`: Any): Boolean {
-        return false
-    }
+    override fun isObjectOfLanguage(`object`: Any): Boolean = false
 
     companion object {
         const val MIME = "application/x-cr01"
@@ -66,20 +56,14 @@ class CrLanguage : TruffleLanguage<CrContext>() {
                 return "ANY"
             }
             val interop = InteropLibrary.getFactory().getUncached(value)
-            return if (interop.isNumber(value)) {
-                "Number"
-            } else if (interop.isBoolean(value)) {
-                "Boolean"
-            } else if (interop.isString(value)) {
-                "String"
-            } else if (interop.isNull(value)) {
-                "NULL"
-            } else if (interop.isExecutable(value)) {
-                "Function"
-            } else if (interop.hasMembers(value)) {
-                "Object"
-            } else {
-                "Unsupported"
+            return when {
+                interop.isNumber(value) -> "Number"
+                interop.isBoolean(value) -> "Boolean"
+                interop.isString(value) -> "String"
+                interop.isNull(value) -> "NULL"
+                interop.isExecutable(value) -> "Function"
+                interop.hasMembers(value) -> "Object"
+                else -> "Unsupported"
             }
         }
     }

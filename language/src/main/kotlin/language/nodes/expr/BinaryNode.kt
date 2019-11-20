@@ -4,7 +4,6 @@ import com.oracle.truffle.api.dsl.Fallback
 import com.oracle.truffle.api.dsl.NodeChild
 import com.oracle.truffle.api.dsl.NodeChildren
 import com.oracle.truffle.api.dsl.Specialization
-import com.oracle.truffle.api.instrumentation.GenerateWrapper
 import com.oracle.truffle.api.nodes.NodeInfo
 import language.runtime.CrException
 

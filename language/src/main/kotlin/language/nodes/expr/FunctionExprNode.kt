@@ -13,24 +13,20 @@ class FunctionExprNode(
     private val parameterList: List<SimpleDeclNode>,
     private val bodyNode: ExprNode
 ) : ExprNode() {
-    override fun executeCrFunction(frame: VirtualFrame): CrFunction {
-        val capturedEnv = frame.materialize()
-        val rootCallTarget = Truffle.getRuntime().createCallTarget(
+    override fun executeCrFunction(frame: VirtualFrame): CrFunction = CrFunction(
+        language,
+        frame.frameDescriptor,
+        "lambda#" + UUID.randomUUID(),
+        parameterList.size,
+        Truffle.getRuntime().createCallTarget(
             CrRootNode(
                 language,
                 frame.frameDescriptor,
                 LetNode(parameterList.toTypedArray(), bodyNode),
-                capturedEnv
+                frame.materialize()
             )
         )
-        return CrFunction(
-            language,
-            frame.frameDescriptor,
-            "lambda#" + UUID.randomUUID(),
-            parameterList.size,
-            rootCallTarget
-        )
-    }
+    )
 
     override fun executeGeneric(frame: VirtualFrame): Any = executeCrFunction(frame)
 

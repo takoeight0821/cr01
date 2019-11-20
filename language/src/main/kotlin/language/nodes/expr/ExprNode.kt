@@ -22,16 +22,13 @@ abstract class ExprNode : Node(), InstrumentableNode {
     abstract fun executeGeneric(frame: VirtualFrame): Any
 
     @Throws(UnexpectedResultException::class)
-    open fun executeLong(frame: VirtualFrame): Long {
-        return CrTypesGen.expectLong(executeGeneric(frame))
-    }
+    open fun executeLong(frame: VirtualFrame): Long = CrTypesGen.expectLong(executeGeneric(frame))
 
     @Throws(UnexpectedResultException::class)
-    open fun executeCrFunction(frame: VirtualFrame): CrFunction {
-        return CrTypesGen.expectCrFunction(executeGeneric(frame))
-    }
+    open fun executeCrFunction(frame: VirtualFrame): CrFunction = CrTypesGen.expectCrFunction(executeGeneric(frame))
 
     // TODO: support source section
     override fun isInstrumentable(): Boolean = true
+
     override fun createWrapper(probe: ProbeNode?): InstrumentableNode.WrapperNode = ExprNodeWrapper(this, probe)
 }

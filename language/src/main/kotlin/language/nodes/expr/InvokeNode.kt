@@ -8,10 +8,7 @@ import com.oracle.truffle.api.interop.UnsupportedMessageException
 import com.oracle.truffle.api.interop.UnsupportedTypeException
 import com.oracle.truffle.api.nodes.ExplodeLoop
 import com.oracle.truffle.api.nodes.NodeInfo
-import com.oracle.truffle.api.profiles.BranchProfile
 import language.runtime.CrException.Companion.typeError
-import java.util.*
-import java.util.stream.Collectors
 
 @NodeInfo(shortName = "invoke")
 class InvokeNode(
@@ -32,7 +29,7 @@ class InvokeNode(
          * array length is really constant.
          * Ref: https://github.com/graalvm/simplelanguage/blob/43a85104fcda80f6a5f8f47f32c7e188e97ff6ba/language/src/main/java/com/oracle/truffle/sl/nodes/expression/SLInvokeNode.java#L82
          */CompilerAsserts.compilationConstant<Any>(argumentNodes.size)
-        val argumentValues = argumentNodes.map { node: ExprNode -> node.executeGeneric(frame) }
+        val argumentValues = argumentNodes.map { it.executeGeneric(frame) }
         return invoke(function, argumentValues)
     }
 

@@ -16,16 +16,14 @@ class FunctionNameNode(language: CrLanguage, private val functionName: String) :
     private val reference: ContextReference<CrContext> = language.contextReference
     override fun executeGeneric(frame: VirtualFrame): Any = executeCrFunction(frame)
 
-    override fun executeCrFunction(frame: VirtualFrame): CrFunction {
-        return when (cachedFunction) {
-            null -> {
-                CompilerDirectives.transferToInterpreterAndInvalidate()
-                cachedFunction = reference.get().functionRegistry.lookup(functionName)
-                cachedFunction!!
-            }
-            else -> {
-                cachedFunction!!
-            }
+    override fun executeCrFunction(frame: VirtualFrame): CrFunction = when (cachedFunction) {
+        null -> {
+            CompilerDirectives.transferToInterpreterAndInvalidate()
+            cachedFunction = reference.get().functionRegistry.lookup(functionName)
+            cachedFunction!!
+        }
+        else -> {
+            cachedFunction!!
         }
     }
 
