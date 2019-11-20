@@ -12,7 +12,6 @@ class CrException private constructor(message: String, private val location: Nod
     }
 
     companion object {
-        @JvmStatic
         fun typeError(operation: Node, vararg values: Any?): CrException {
             val result = StringBuilder()
             result.append("Type error")

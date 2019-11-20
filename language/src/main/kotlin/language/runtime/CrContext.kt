@@ -12,7 +12,6 @@ class CrContext(env: TruffleLanguage.Env) {
     val output: PrintWriter = PrintWriter(env.out(), true)
 
     companion object {
-        @JvmStatic
         fun fromForeignValue(a: Any): Any {
             return when (a) {
                 is Long -> a
