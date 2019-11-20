@@ -1,12 +1,9 @@
 package language.nodes
 
-import com.oracle.truffle.api.dsl.NodeChild
-import com.oracle.truffle.api.dsl.NodeField
 import com.oracle.truffle.api.frame.*
 import com.oracle.truffle.api.nodes.RootNode
 import language.CrLanguage
 import language.nodes.expr.ExprNode
-import language.nodes.stmt.StmtNode
 
 class CrRootNode constructor(
     language: CrLanguage,
