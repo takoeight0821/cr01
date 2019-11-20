@@ -6,7 +6,7 @@ import com.oracle.truffle.api.TruffleLanguage
 import com.oracle.truffle.api.interop.TruffleObject
 import com.oracle.truffle.api.nodes.NodeInfo
 import java.io.PrintWriter
-import java.util.HashMap
+import java.util.*
 
 class CrContext(env: TruffleLanguage.Env) {
     private val functions: MutableMap<String, CrFunction> = HashMap()
