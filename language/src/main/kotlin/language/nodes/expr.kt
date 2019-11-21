@@ -21,6 +21,7 @@ import com.oracle.truffle.api.nodes.Node
 import com.oracle.truffle.api.nodes.NodeInfo
 import com.oracle.truffle.api.nodes.UnexpectedResultException
 import com.oracle.truffle.api.profiles.BranchProfile
+import com.oracle.truffle.api.profiles.ConditionProfile
 import language.CrLanguage
 import language.nodes.CrRootNode
 import language.nodes.CrTypes
@@ -31,6 +32,7 @@ import language.runtime.CrException
 import language.value.CrFunction
 import language.value.CrNull
 import java.util.*
+import java.util.concurrent.locks.Condition
 
 @TypeSystemReference(CrTypes::class)
 @NodeInfo(description = "The abstract base node for all expressions")
@@ -89,6 +91,9 @@ abstract class VariableNode : ExprNode() {
     NodeChild("rightNode")
 )
 sealed class BinaryNode : ExprNode() {
+    abstract val leftNode: ExprNode
+    abstract val rightNode: ExprNode
+
     @NodeInfo(shortName = "+")
     abstract class AddNode : BinaryNode() {
         @Specialization
@@ -123,6 +128,18 @@ sealed class BinaryNode : ExprNode() {
 
         @Fallback
         fun typeError(left: Any, right: Any): Any = throw CrException.typeError(this, left, right)
+    }
+
+    @NodeInfo(shortName = "==")
+    abstract class EqNode : BinaryNode() {
+        @Specialization
+        fun eq(left: Any, right: Any): Boolean = left == right
+    }
+
+    @NodeInfo(shortName = "!=")
+    abstract class NeNode : BinaryNode() {
+        @Specialization
+        fun ne(left: Any, right: Any): Boolean = left != right
     }
 }
 
@@ -250,4 +267,26 @@ class LetNode(
         }
         return bodyNode.executeGeneric(frame)
     }
+}
+
+// if expression
+@NodeInfo(shortName = "if")
+class IfNode(
+    @field:Child private var conditionNode: ExprNode,
+    @field:Child private var thenNode: ExprNode,
+    @field:Child private var elseNode: ExprNode
+) : ExprNode() {
+    private val condition = ConditionProfile.createCountingProfile()
+    override fun executeGeneric(frame: VirtualFrame): Any = if (condition.profile(evaluateCondition(frame))) {
+        thenNode.executeGeneric(frame)
+    } else {
+        elseNode.executeGeneric(frame)
+    }
+
+    private fun evaluateCondition(frame: VirtualFrame): Boolean = try {
+        conditionNode.executeBoolean(frame);
+    } catch (ex: UnexpectedResultException) {
+        throw CrException.typeError(this, ex.result)
+    }
+
 }

@@ -77,6 +77,8 @@ class CrNodeFactory(private val language: CrLanguage) {
             Cr01Lexer.OP_SUB -> SubNodeGen.create(left, right)
             Cr01Lexer.OP_MUL -> MulNodeGen.create(left, right)
             Cr01Lexer.OP_DIV -> DivNodeGen.create(left, right)
+            Cr01Lexer.OP_EQ -> EqNodeGen.create(left, right)
+            Cr01Lexer.OP_NE -> NeNodeGen.create(left, right)
             else -> error("unexpected opType\n")
         }
 
@@ -85,6 +87,8 @@ class CrNodeFactory(private val language: CrLanguage) {
     fun createBool(value: Boolean): BoolNode = BoolNode(value)
 
     fun createApply(funcNode: ExprNode, argNodes: Array<ExprNode>): InvokeNode = InvokeNode(funcNode, argNodes)
+
+    fun createIf(conditionNode: ExprNode, thenNode: ExprNode, elseNode: ExprNode): IfNode = IfNode(conditionNode, thenNode, elseNode)
 }
 
 internal class LexicalScope(val outer: LexicalScope?) {

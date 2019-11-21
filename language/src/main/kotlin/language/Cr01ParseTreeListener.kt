@@ -1,5 +1,7 @@
 package language
 
+import com.oracle.truffle.api.nodes.Node
+import com.oracle.truffle.api.nodes.NodeUtil
 import language.nodes.builder.CrNodeFactory
 import language.nodes.expr.ExprNode
 import language.parser.Cr01BaseListener
@@ -29,7 +31,8 @@ class Cr01ParseTreeListener internal constructor(language: CrLanguage) : Cr01Bas
     }
 
     override fun exitFunDecl(ctx: FunDeclContext) {
-        val function = factory.endFunction(nodes.pop())
+        val body = nodes.pop()
+        val function = factory.endFunction(body)
         functions[function.name] = function
     }
 
@@ -69,6 +72,13 @@ class Cr01ParseTreeListener internal constructor(language: CrLanguage) : Cr01Bas
         nodes.push(factory.createVar(name))
     }
 
+    override fun exitIfExpr(ctx: IfExprContext?) {
+        val elseNode = nodes.pop()
+        val thenNode = nodes.pop()
+        val conditionNode = nodes.pop()
+        nodes.push(factory.createIf(conditionNode, thenNode, elseNode))
+    }
+
     override fun exitSimpleDecl(ctx: SimpleDeclContext) {
         val name = ctx.name.text
         val value = nodes.pop()
@@ -96,5 +106,4 @@ class Cr01ParseTreeListener internal constructor(language: CrLanguage) : Cr01Bas
     override fun exitFnExpr(ctx: FnExprContext) {
         nodes.push(factory.createFunctionExpr(nodes.pop()))
     }
-
 }

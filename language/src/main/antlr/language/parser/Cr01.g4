@@ -16,8 +16,10 @@ simpleExpr : '(' expr ')' #parensExpr
            ;
 
 expr : func=simpleExpr (args+=simpleExpr)* #applyExpr
-     | left=expr op=('*' | '/') right=expr #infixExpr
-     | left=expr op=('+' | '-') right=expr #infixExpr
+     | expr op=('*' | '/') expr #infixExpr
+     | expr op=('+' | '-') expr #infixExpr
+     | expr op=('==' | '!=') expr #infixExpr
+     | 'if' expr 'then' expr 'else' expr #ifExpr
      | 'fn' (params+=ID)+ '->' body=expr #fnExpr
      | 'let' var_decl 'in' body=expr #letExpr
      ;
@@ -28,6 +30,8 @@ OP_ADD: '+';
 OP_SUB: '-';
 OP_MUL: '*';
 OP_DIV: '/';
+OP_EQ: '==';
+OP_NE: '!=';
 
 ID: [a-z_][a-zA-Z0-9_]*;
 NUM: [0-9]+;
