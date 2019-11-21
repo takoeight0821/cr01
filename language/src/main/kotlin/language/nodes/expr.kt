@@ -43,6 +43,9 @@ abstract class ExprNode : Node(), InstrumentableNode {
     open fun executeLong(frame: VirtualFrame): Long = CrTypesGen.expectLong(executeGeneric(frame))
 
     @Throws(UnexpectedResultException::class)
+    open fun executeBoolean(frame: VirtualFrame): Boolean = CrTypesGen.expectBoolean(executeGeneric(frame))
+
+    @Throws(UnexpectedResultException::class)
     open fun executeCrFunction(frame: VirtualFrame): CrFunction = CrTypesGen.expectCrFunction(executeGeneric(frame))
 
     // TODO: support source section
@@ -51,6 +54,36 @@ abstract class ExprNode : Node(), InstrumentableNode {
     override fun createWrapper(probe: ProbeNode?): InstrumentableNode.WrapperNode = ExprNodeWrapper(this, probe)
 }
 
+// Literal
+@NodeInfo(shortName = "value")
+class LongNode(private val value: Long) : ExprNode() {
+    override fun executeLong(frame: VirtualFrame): Long = value
+
+    override fun executeGeneric(frame: VirtualFrame): Any = value
+}
+
+@NodeInfo(shortName = "value")
+class BoolNode(private val value: Boolean) : ExprNode() {
+    override fun executeBoolean(frame: VirtualFrame): Boolean = value
+    override fun executeGeneric(frame: VirtualFrame): Any = value
+}
+
+// Variable
+@NodeField(name = "slot", type = FrameSlot::class)
+abstract class VariableNode : ExprNode() {
+    protected abstract val slot: FrameSlot
+    @Specialization(guards = ["isLong(frame)"])
+    fun readLong(frame: VirtualFrame): Long =
+        FrameUtil.getLongSafe(frame, slot)
+
+    @Specialization(replaces = ["readLong"])
+    fun read(frame: VirtualFrame): Any =
+        FrameUtil.getObjectSafe(frame, slot)
+
+    fun isLong(frame: VirtualFrame): Boolean = frame.frameDescriptor.getFrameSlotKind(slot) == FrameSlotKind.Long
+}
+
+// Binary operator
 @NodeChildren(
     NodeChild("leftNode"),
     NodeChild("rightNode")
@@ -93,6 +126,7 @@ sealed class BinaryNode : ExprNode() {
     }
 }
 
+// Function literal
 class FunctionExprNode(
     private val language: CrLanguage,
     private val parameterList: List<SimpleDeclNode>,
@@ -117,6 +151,7 @@ class FunctionExprNode(
     override fun executeGeneric(frame: VirtualFrame): Any = executeCrFunction(frame)
 }
 
+// Function name
 @NodeInfo(shortName = "func")
 class FunctionNameNode(language: CrLanguage, private val functionName: String) : ExprNode() {
     @CompilerDirectives.CompilationFinal
@@ -134,9 +169,23 @@ class FunctionNameNode(language: CrLanguage, private val functionName: String) :
             cachedFunction!!
         }
     }
-
 }
 
+// Read arguments (used in CrFunction)
+class ReadArgumentNode(private val index: Int) : ExprNode() {
+    private val outOfBoundsTaken = BranchProfile.create()
+    override fun executeGeneric(frame: VirtualFrame): Any {
+        val args = frame.arguments
+        return if (index < args.size) {
+            args[index]
+        } else {
+            outOfBoundsTaken.enter()
+            CrNull
+        }
+    }
+}
+
+// Function call
 @NodeInfo(shortName = "invoke")
 class InvokeNode(
     @field:Child private var functionNode: ExprNode,
@@ -186,6 +235,7 @@ class InvokeNode(
     }
 }
 
+// Define local variables
 @NodeInfo(shortName = "let")
 class LetNode(
     @field:Children private val declNodes: Array<SimpleDeclNode>,
@@ -200,39 +250,4 @@ class LetNode(
         }
         return bodyNode.executeGeneric(frame)
     }
-
-}
-
-@NodeInfo(shortName = "value")
-class LongNode(private val value: Long) : ExprNode() {
-    override fun executeLong(frame: VirtualFrame): Long = value
-
-    override fun executeGeneric(frame: VirtualFrame): Any = value
-}
-
-class ReadArgumentNode(private val index: Int) : ExprNode() {
-    private val outOfBoundsTaken = BranchProfile.create()
-    override fun executeGeneric(frame: VirtualFrame): Any {
-        val args = frame.arguments
-        return if (index < args.size) {
-            args[index]
-        } else {
-            outOfBoundsTaken.enter()
-            CrNull
-        }
-    }
-}
-
-@NodeField(name = "slot", type = FrameSlot::class)
-abstract class VariableNode : ExprNode() {
-    protected abstract val slot: FrameSlot
-    @Specialization(guards = ["isLong(frame)"])
-    fun readLong(frame: VirtualFrame): Long =
-        FrameUtil.getLongSafe(frame, slot)
-
-    @Specialization(replaces = ["readLong"])
-    fun read(frame: VirtualFrame): Any =
-        FrameUtil.getObjectSafe(frame, slot)
-
-    fun isLong(frame: VirtualFrame): Boolean = frame.frameDescriptor.getFrameSlotKind(slot) == FrameSlotKind.Long
 }

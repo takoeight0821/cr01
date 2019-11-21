@@ -9,6 +9,8 @@ prog : (funDecl ';')+ EOF ;
 funDecl : name=ID (params+=ID)+ '=' expr ;
 
 simpleExpr : '(' expr ')' #parensExpr
+           | 'true' #trueExpr
+           | 'false' #falseExpr
            | name=ID #varExpr
            | value=NUM #numberExpr
            ;

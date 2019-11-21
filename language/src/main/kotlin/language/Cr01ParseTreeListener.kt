@@ -56,6 +56,14 @@ class Cr01ParseTreeListener internal constructor(language: CrLanguage) : Cr01Bas
         nodes.push(factory.createNumber(text.toLong()))
     }
 
+    override fun exitTrueExpr(ctx: TrueExprContext) {
+        nodes.push(factory.createBool(true))
+    }
+
+    override fun exitFalseExpr(ctx: FalseExprContext?) {
+        nodes.push(factory.createBool(false))
+    }
+
     override fun exitVarExpr(ctx: VarExprContext) {
         val name = ctx.name.text
         nodes.push(factory.createVar(name))

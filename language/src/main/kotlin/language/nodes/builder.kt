@@ -82,6 +82,8 @@ class CrNodeFactory(private val language: CrLanguage) {
 
     fun createNumber(value: Long): LongNode = LongNode(value)
 
+    fun createBool(value: Boolean): BoolNode = BoolNode(value)
+
     fun createApply(funcNode: ExprNode, argNodes: Array<ExprNode>): InvokeNode = InvokeNode(funcNode, argNodes)
 }
 
