@@ -7,6 +7,7 @@ import com.oracle.truffle.api.frame.FrameSlotKind
 import language.CrLanguage
 import language.nodes.CrRootNode
 import language.nodes.expr.*
+import language.nodes.expr.BinaryNodeFactory.*
 import language.nodes.stmt.SimpleDeclNode
 import language.nodes.stmt.SimpleDeclNodeGen
 import language.parser.Cr01Lexer

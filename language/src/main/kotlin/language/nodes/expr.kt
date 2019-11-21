@@ -55,42 +55,42 @@ abstract class ExprNode : Node(), InstrumentableNode {
     NodeChild("leftNode"),
     NodeChild("rightNode")
 )
-abstract class BinaryNode : ExprNode()
+sealed class BinaryNode : ExprNode() {
+    @NodeInfo(shortName = "+")
+    abstract class AddNode : BinaryNode() {
+        @Specialization
+        fun add(left: Long, right: Long): Long = left + right
 
-@NodeInfo(shortName = "+")
-abstract class AddNode : BinaryNode() {
-    @Specialization
-    fun add(left: Long, right: Long): Long = left + right
+        @Fallback
+        fun typeError(left: Any, right: Any): Any = throw CrException.typeError(this, left, right)
+    }
 
-    @Fallback
-    fun typeError(left: Any, right: Any): Any = throw CrException.typeError(this, left, right)
-}
+    @NodeInfo(shortName = "-")
+    abstract class SubNode : BinaryNode() {
+        @Specialization
+        fun sub(left: Long, right: Long): Long = left - right
 
-@NodeInfo(shortName = "-")
-abstract class SubNode : BinaryNode() {
-    @Specialization
-    fun sub(left: Long, right: Long): Long = left - right
+        @Fallback
+        fun typeError(left: Any, right: Any): Any = throw CrException.typeError(this, left, right)
+    }
 
-    @Fallback
-    fun typeError(left: Any, right: Any): Any = throw CrException.typeError(this, left, right)
-}
+    @NodeInfo(shortName = "*")
+    abstract class MulNode : BinaryNode() {
+        @Specialization
+        fun mul(left: Long, right: Long): Long = left * right
 
-@NodeInfo(shortName = "*")
-abstract class MulNode : BinaryNode() {
-    @Specialization
-    fun mul(left: Long, right: Long): Long = left * right
+        @Fallback
+        fun typeError(left: Any, right: Any): Any = throw CrException.typeError(this, left, right)
+    }
 
-    @Fallback
-    fun typeError(left: Any, right: Any): Any = throw CrException.typeError(this, left, right)
-}
+    @NodeInfo(shortName = "/")
+    abstract class DivNode : BinaryNode() {
+        @Specialization
+        fun div(left: Long, right: Long): Long = left / right
 
-@NodeInfo(shortName = "/")
-abstract class DivNode : BinaryNode() {
-    @Specialization
-    fun div(left: Long, right: Long): Long = left / right
-
-    @Fallback
-    fun typeError(left: Any, right: Any): Any = throw CrException.typeError(this, left, right)
+        @Fallback
+        fun typeError(left: Any, right: Any): Any = throw CrException.typeError(this, left, right)
+    }
 }
 
 class FunctionExprNode(
