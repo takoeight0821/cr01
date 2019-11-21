@@ -66,7 +66,6 @@ abstract class AddNode : BinaryNode() {
     fun typeError(left: Any, right: Any): Any = throw CrException.typeError(this, left, right)
 }
 
-
 @NodeInfo(shortName = "-")
 abstract class SubNode : BinaryNode() {
     @Specialization
