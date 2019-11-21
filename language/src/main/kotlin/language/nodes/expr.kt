@@ -204,14 +204,9 @@ class ReadArgumentNode(private val index: Int) : ExprNode() {
 
 // Function call
 @NodeInfo(shortName = "invoke")
-class InvokeNode(
-    @field:Child private var functionNode: ExprNode,
-    @field:Children private val argumentNodes: Array<ExprNode>
-) :
+class InvokeNode(@Child @JvmField var functionNode: ExprNode, @Child @JvmField var argumentNodes: ArgumentsNode) :
     ExprNode() {
-    @Child
-    private var library: InteropLibrary = InteropLibrary.getFactory()
-        .createDispatched(3)
+    @Child var library: InteropLibrary = InteropLibrary.getFactory().createDispatched(3)
 
     @ExplodeLoop
     override fun executeGeneric(frame: VirtualFrame): Any {
@@ -222,32 +217,40 @@ class InvokeNode(
          * ExplodeLoop annotation on the method. The compiler assertion below illustrates that the
          * array length is really constant.
          * Ref: https://github.com/graalvm/simplelanguage/blob/43a85104fcda80f6a5f8f47f32c7e188e97ff6ba/language/src/main/java/com/oracle/truffle/sl/nodes/expression/SLInvokeNode.java#L82
-         */CompilerAsserts.compilationConstant<Any>(argumentNodes.size)
-        val argumentValues = argumentNodes.map { it.executeGeneric(frame) }
+         */
+        val argumentValues = argumentNodes.execute(frame)
+        CompilerAsserts.compilationConstant<Any>(argumentValues.size)
         return invoke(function, argumentValues)
     }
 
-    private fun invoke(function: Any, arguments: List<Any>): Any {
+    fun invoke(function: Any, arguments: Array<Any>): Any {
         return try {
-            library.execute(function, *arguments.toTypedArray())
+            library.execute(function, *arguments)
         } catch (e: ArityException) {
             assert(e.expectedArity < e.actualArity)
-            val expectedArguments = arguments.subList(0, e.expectedArity)
-            val restArguments = arguments.subList(e.expectedArity, arguments.size)
+            val expectedArguments = arguments.copyOfRange(0, e.expectedArity)
+            val restArguments = arguments.copyOfRange(e.expectedArity, arguments.size)
             val function1 = invoke(function, expectedArguments)
             invoke(function1, restArguments)
         } catch (e: UnsupportedTypeException) {
             throw CrException.typeError(
                 this,
                 function,
-                *arguments.toTypedArray()
+                *arguments
             )
         } catch (e: UnsupportedMessageException) {
             throw CrException.typeError(
                 this,
                 function,
-                *arguments.toTypedArray()
+                *arguments
             )
+        }
+    }
+
+    @NodeInfo(shortName = "arguments")
+    class ArgumentsNode(@field:Children private val argumentNodes: Array<ExprNode>): Node() {
+        fun execute(frame: VirtualFrame): Array<Any> {
+            return argumentNodes.map { a -> a.executeGeneric(frame) }.toTypedArray()
         }
     }
 }
