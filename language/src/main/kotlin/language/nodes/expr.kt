@@ -189,15 +189,13 @@ class FunctionNameNode(language: CrLanguage, private val functionName: String) :
 // Read arguments (used in CrFunction)
 class ReadArgumentNode(private val index: Int) : ExprNode() {
     private val outOfBoundsTaken = BranchProfile.create()
-    override fun executeGeneric(frame: VirtualFrame): Any {
-        val args = frame.arguments
-        return if (index < args.size) {
-            args[index]
+    override fun executeGeneric(frame: VirtualFrame): Any =
+        if (index < frame.arguments.size) {
+            frame.arguments[index]
         } else {
             outOfBoundsTaken.enter()
             CrNull
         }
-    }
 }
 
 // Function call
