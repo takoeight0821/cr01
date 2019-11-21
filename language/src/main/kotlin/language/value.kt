@@ -24,7 +24,7 @@ class CrFunction @JvmOverloads constructor(
     private val callNode: DirectCallNode =
         DirectCallNode.create(callTarget)
 
-    private fun arity(): Int = parameterCount - appliedArguments.size
+    fun arity(): Int = parameterCount - appliedArguments.size
 
     private fun partialApply(args: Array<Any>): CrFunction =
         CrFunction(
@@ -36,7 +36,7 @@ class CrFunction @JvmOverloads constructor(
             arrayOf(*appliedArguments, *args)
         )
 
-    override fun toString(): String = name + appliedArguments + ":" + arity()
+    override fun toString(): String = name + appliedArguments.toList() + ":" + arity()
 
     @get:ExportMessage
     val isExecutable: Boolean

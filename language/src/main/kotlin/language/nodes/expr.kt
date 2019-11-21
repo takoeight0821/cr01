@@ -1,6 +1,5 @@
 package language.nodes.expr
 
-import com.oracle.truffle.api.CompilerAsserts
 import com.oracle.truffle.api.CompilerDirectives
 import com.oracle.truffle.api.Truffle
 import com.oracle.truffle.api.TruffleLanguage
@@ -32,7 +31,6 @@ import language.runtime.CrException
 import language.value.CrFunction
 import language.value.CrNull
 import java.util.*
-import java.util.concurrent.locks.Condition
 
 @TypeSystemReference(CrTypes::class)
 @NodeInfo(description = "The abstract base node for all expressions")
@@ -204,51 +202,62 @@ class ReadArgumentNode(private val index: Int) : ExprNode() {
 
 // Function call
 @NodeInfo(shortName = "invoke")
-class InvokeNode(@Child @JvmField var functionNode: ExprNode, @Child @JvmField var argumentNodes: ArgumentsNode) :
+@NodeChildren(
+    NodeChild("functionNode"),
+    NodeChild(value = "argumentsNode", type = InvokeNode.ArgumentsNode::class)
+)
+abstract class InvokeNode() :
     ExprNode() {
-    @Child var library: InteropLibrary = InteropLibrary.getFactory().createDispatched(3)
+    @Child
+    var library: InteropLibrary = InteropLibrary.getFactory().createDispatched(3)
 
+    private val isCrFunctionProfile: ConditionProfile = ConditionProfile.createCountingProfile()
+    private val isActualProfile: ConditionProfile = ConditionProfile.createCountingProfile()
+
+    @Specialization(guards = ["isActualArity(function, arguments)"])
     @ExplodeLoop
-    override fun executeGeneric(frame: VirtualFrame): Any {
-        val function = functionNode.executeGeneric(frame)
-        /*
-         * The number of arguments is constant for one invoke node. During compilation, the loop is
-         * unrolled and the execute methods of all arguments are inlined. This is triggered by the
-         * ExplodeLoop annotation on the method. The compiler assertion below illustrates that the
-         * array length is really constant.
-         * Ref: https://github.com/graalvm/simplelanguage/blob/43a85104fcda80f6a5f8f47f32c7e188e97ff6ba/language/src/main/java/com/oracle/truffle/sl/nodes/expression/SLInvokeNode.java#L82
-         */
-        val argumentValues = argumentNodes.execute(frame)
-        CompilerAsserts.compilationConstant<Any>(argumentValues.size)
-        return invoke(function, argumentValues)
+    fun invokeActual(function: CrFunction, arguments: Array<Any>): Any {
+        return library.execute(function, *arguments)
     }
 
+    @Specialization
+    @ExplodeLoop
+    fun invokeCurried(function: CrFunction, arguments: Array<Any>): Any {
+        assert(function.arity() < arguments.size)
+
+        val expectedArguments = arguments.copyOfRange(0, function.arity())
+        val restArguments = arguments.copyOfRange(function.arity(), arguments.size)
+        val function1 = invokeActual(function, expectedArguments)
+
+        if (isCrFunctionProfile.profile(function1 is CrFunction)) {
+            return if (isActualProfile.profile(isActualArity(function1 as CrFunction, restArguments))) {
+                invokeActual(function1, restArguments)
+            } else {
+                invokeCurried(function1, restArguments)
+            }
+        }
+        return invoke(function1, restArguments)
+    }
+
+    fun isActualArity(function: CrFunction, arguments: Array<Any>): Boolean = function.arity() >= arguments.size
+
+    @Specialization(replaces = ["invokeActual", "invokeCurried"])
+    @ExplodeLoop
     fun invoke(function: Any, arguments: Array<Any>): Any {
+        assert(function !is CrFunction)
         return try {
             library.execute(function, *arguments)
         } catch (e: ArityException) {
-            assert(e.expectedArity < e.actualArity)
-            val expectedArguments = arguments.copyOfRange(0, e.expectedArity)
-            val restArguments = arguments.copyOfRange(e.expectedArity, arguments.size)
-            val function1 = invoke(function, expectedArguments)
-            invoke(function1, restArguments)
+            throw CrException.typeError(this, function, *arguments)
         } catch (e: UnsupportedTypeException) {
-            throw CrException.typeError(
-                this,
-                function,
-                *arguments
-            )
+            throw CrException.typeError(this, function, *arguments)
         } catch (e: UnsupportedMessageException) {
-            throw CrException.typeError(
-                this,
-                function,
-                *arguments
-            )
+            throw CrException.typeError(this, function, *arguments)
         }
     }
 
     @NodeInfo(shortName = "arguments")
-    class ArgumentsNode(@field:Children private val argumentNodes: Array<ExprNode>): Node() {
+    class ArgumentsNode(@field:Children private val argumentNodes: Array<ExprNode>) : Node() {
         fun execute(frame: VirtualFrame): Array<Any> {
             return argumentNodes.map { a -> a.executeGeneric(frame) }.toTypedArray()
         }

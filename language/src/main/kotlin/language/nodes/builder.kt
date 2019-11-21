@@ -86,9 +86,11 @@ class CrNodeFactory(private val language: CrLanguage) {
 
     fun createBool(value: Boolean): BoolNode = BoolNode(value)
 
-    fun createApply(funcNode: ExprNode, argNodes: Array<ExprNode>): InvokeNode = InvokeNode(funcNode, InvokeNode.ArgumentsNode(argNodes))
+    fun createApply(funcNode: ExprNode, argNodes: Array<ExprNode>): InvokeNode =
+        InvokeNodeGen.create(funcNode, InvokeNode.ArgumentsNode(argNodes))
 
-    fun createIf(conditionNode: ExprNode, thenNode: ExprNode, elseNode: ExprNode): IfNode = IfNode(conditionNode, thenNode, elseNode)
+    fun createIf(conditionNode: ExprNode, thenNode: ExprNode, elseNode: ExprNode): IfNode =
+        IfNode(conditionNode, thenNode, elseNode)
 }
 
 internal class LexicalScope(val outer: LexicalScope?) {
