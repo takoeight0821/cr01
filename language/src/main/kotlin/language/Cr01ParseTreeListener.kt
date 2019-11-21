@@ -47,7 +47,8 @@ class Cr01ParseTreeListener internal constructor(language: CrLanguage) : Cr01Bas
     override fun exitInfixExpr(ctx: InfixExprContext) {
         val right = nodes.pop()
         val left = nodes.pop()
-        nodes.push(factory.createInfix(ctx.op.type, left, right))
+        val op: Int = ctx.op.type
+        nodes.push(factory.createInfix(op, left, right))
     }
 
     override fun exitNumberExpr(ctx: NumberExprContext) {
