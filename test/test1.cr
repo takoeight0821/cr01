@@ -1,6 +1,7 @@
-fix f x = f (fix f) x;
-fact f x =
+fib x =
   if x == 0
   then 1
-  else x * f (x - 1);
-main _ = (fix fact) 5;
+  else if x == 1
+       then 1
+       else fib (x - 1) + fib (x - 2);
+main _ = fib 10;

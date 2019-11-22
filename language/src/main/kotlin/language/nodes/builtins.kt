@@ -1,6 +1,5 @@
 package language.nodes.builtins
 
-import com.oracle.truffle.api.CompilerDirectives
 import com.oracle.truffle.api.Truffle
 import com.oracle.truffle.api.dsl.CachedContext
 import com.oracle.truffle.api.dsl.NodeChild
@@ -13,7 +12,6 @@ import language.nodes.expr.ExprNode
 import language.nodes.expr.ReadArgumentNode
 import language.runtime.CrContext
 import language.value.CrFunction
-import java.io.PrintWriter
 
 @NodeChild(value = "arguments", type = Array<ExprNode>::class)
 abstract class BuiltinNode : ExprNode() {
@@ -38,29 +36,25 @@ abstract class BuiltinNode : ExprNode() {
 abstract class PrintlnBuiltin : BuiltinNode() {
     @Specialization
     fun println(value: Long, @CachedContext(CrLanguage::class) context: CrContext): Long {
-        doPrint(context.output, value)
+        context.output.println(value)
         return value
     }
 
-    @CompilerDirectives.TruffleBoundary
-    private fun doPrint(output: PrintWriter, value: Long) {
-        output.println(value)
+    @Specialization
+    fun println(value: Boolean, @CachedContext(CrLanguage::class) context: CrContext): Boolean {
+        context.output.println(value)
+        return value
     }
 
     @Specialization
     fun println(value: Any, @CachedContext(CrLanguage::class) context: CrContext): Any {
-        doPrint(context.output, value)
+        context.output.println(value)
         return value
-    }
-
-    @CompilerDirectives.TruffleBoundary
-    private fun doPrint(output: PrintWriter, value: Any) {
-        output.println(value)
     }
 
     companion object {
         fun printlnBuiltin(language: CrLanguage): Pair<String, CrFunction> =
-            builtin(language, "println", 1, PrintlnBuiltinNodeGen.create(arrayOf(ReadArgumentNode(1))))
+            builtin(language, "println", 1, PrintlnBuiltinNodeGen.create(arrayOf(ReadArgumentNode(0))))
     }
 }
 
