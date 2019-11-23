@@ -14,7 +14,6 @@ import org.antlr.v4.runtime.CharStreams
 import org.antlr.v4.runtime.CommonTokenStream
 import org.antlr.v4.runtime.tree.ParseTreeWalker
 
-
 @TruffleLanguage.Registration(
     name = "cr01",
     id = "cr01",
@@ -24,11 +23,15 @@ import org.antlr.v4.runtime.tree.ParseTreeWalker
 class CrLanguage : TruffleLanguage<CrContext>() {
     override fun parse(request: ParsingRequest): CallTarget {
         val functions = parseSource(request.source)
+        // get body expression of function "main" and wrap it with CrEvalRootNode
         val evalMain = functions["main"]?.callTarget?.let { CrEvalRootNode(this, it, functions) }
             ?: error("function 'main' is not defined")
         return Truffle.getRuntime().createCallTarget(evalMain)
     }
 
+    /**
+     * parse input source code and return toplevel functions AST wrapped in CrFunction
+     */
     private fun parseSource(source: Source): Map<String, CrFunction> {
         val parser = Cr01Parser(CommonTokenStream(Cr01Lexer(CharStreams.fromString(source.characters.toString()))))
         val listener = Cr01ParseTreeListener(this)
